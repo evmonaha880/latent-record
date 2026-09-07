@@ -285,10 +285,12 @@ article.para.ks .km{color:var(--ink-2)}
 .strip .f.lit{background:var(--film); opacity:1; min-width:4px}
 .strip .f.gap{flex:0 0 6px; background:transparent}
 .strip-note{font-family:"IBM Plex Mono",monospace; font-size:.64rem; color:var(--ink-3)}
-.xf{position:relative; min-height:4rem; margin:.4rem 0 .3rem; line-height:1.55}
-.xf .lay{position:absolute; inset:0; transition:opacity .08s linear; padding:.4rem .6rem; border-radius:2px}
-.xf .lay.a{position:relative}
-.xf .lay.b{background:var(--raised)}
+.xf{position:relative; min-height:4rem; margin:.4rem 0 .3rem; line-height:1.55; padding:.4rem .6rem; border-radius:2px; background:var(--raised)}
+.xf .rm{color:var(--grease); text-decoration:line-through; text-decoration-thickness:1px; text-decoration-color:color-mix(in srgb,var(--grease) 70%,transparent)}
+.xf .ad{background:color-mix(in srgb,var(--machine) 18%,transparent); border-radius:2px}
+.xf .rm, .xf .ad{transition:opacity .06s linear}
+.xf-legend{font-family:"IBM Plex Mono",monospace; font-size:.6rem; color:var(--ink-3); letter-spacing:.04em; margin-top:.25rem}
+.xf-legend i{display:inline-block; width:9px; height:9px; border-radius:1px; vertical-align:middle; margin:0 .3rem 0 .6rem}
 .xf-ctl{display:grid; grid-template-columns:auto 1fr auto; gap:.6rem; align-items:center; margin-top:.3rem}
 .xf-ctl input[type=range]{width:100%; accent-color:var(--film)}
 .xf-ctl button{font-family:"IBM Plex Mono",monospace; font-size:.7rem; background:none; border:1px solid var(--rule-hard); color:var(--ink-2); border-radius:2px; padding:.25rem .5rem; cursor:pointer}
@@ -444,9 +446,9 @@ function render(p, state, notes){
   h += `</div><p class="strip-note">${p.states.length} of 587 frames · born state ${p.born} (${esc(p.hist[0].when)}) · settled state ${p.last} (${esc(p.hist[p.hist.length-1].when)}) · ${p.revisions} revisions</p>`;
   // 3 crossfade
   const stops = p.stops; const n = stops.length;
-  h += `<h4>crossfade · the passes it lived in</h4><div class="xf"><div class="lay a" id="xa"></div><div class="lay b" id="xb"></div></div>
+  h += `<h4>crossfade · the passes it lived in</h4><div class="xf" id="xa"></div>
   <div class="xf-ctl"><button data-step="-1" aria-label="previous stop">◀</button><input type="range" min="0" max="${(n-1)*100}" value="0" step="1" aria-label="crossfade between stops"><button data-step="1" aria-label="next stop">▶</button></div>
-  <div class="xf-stops">${stops.map((s,i)=>`<span data-i="${i}">${esc(s.label)} · state ${s.state}</span>`).join("")}</div><div class="xf-now" id="xnow"></div>`;
+  <div class="xf-stops">${stops.map((s,i)=>`<span data-i="${i}">${esc(s.label)} · state ${s.state}</span>`).join("")}</div><div class="xf-now" id="xnow"></div><div class="xf-legend">between stops the paragraph morphs word by word:<i style="background:var(--grease)"></i>leaving<i style="background:color-mix(in srgb,var(--machine) 40%,transparent)"></i>arriving</div>`;
   // 4 history (folded typing runs) — steppers over scroll
   h += `<h4>history · ${p.hist.length} rows${p.revisions>p.hist.length-1?` (typing runs folded; the record keeps every state)`:""}</h4><ul class="hist">`;
   for (const r of p.hist){
@@ -490,20 +492,39 @@ function render(p, state, notes){
   // wire: text toggle
   $$(".seg [data-v]", enl).forEach(b=> b.addEventListener("click", ()=>{ $$(".seg [data-v]", enl).forEach(x=>x.setAttribute("aria-pressed","false")); b.setAttribute("aria-pressed","true"); art.classList.toggle("ks", b.dataset.v==="ks"); }));
   // wire: crossfade
-  const range = $("input[type=range]", enl); const xa=$("#xa",enl), xb=$("#xb",enl), xnow=$("#xnow",enl);
+  const range = $("input[type=range]", enl); const xa=$("#xa",enl), xnow=$("#xnow",enl);
+  const textOf = st => p.texts[String(stateOf(p, st))] || "";
   function setXF(v){ const i = Math.min(n-1, Math.floor(v/100)); const f = (v%100)/100; const A = stops[i], B = stops[Math.min(n-1,i+1)];
-    xa.innerHTML = p.texts[String(stateOf(p,A.state))] || ""; xb.innerHTML = p.texts[String(stateOf(p,B.state))] || ""; xb.style.opacity = f; xa.style.opacity = 1-f*0.85;
+    if (f < 0.005 || A.state===B.state) xa.innerHTML = textOf(A.state);
+    else if (f > 0.995) xa.innerHTML = textOf(B.state);
+    else xa.innerHTML = morph(textOf(A.state), textOf(B.state), f);
     $$(".xf-stops span", enl).forEach((s,j)=> s.classList.toggle("on", j===i && f<0.5 || j===i+1 && f>=0.5)); }
   function showState(s){ // a state that need not be a stop (from the hash)
     const st = stateOf(p, s); const idx = stops.findIndex(x=>x.state===st);
-    if (idx>=0){ range.value = idx*100; setXF(idx*100); } else { let j = 0; for (let i=0;i<n;i++) if (stops[i].state<=st) j=i; range.value=j*100; setXF(j*100); xa.innerHTML = p.texts[String(st)] || xa.innerHTML; xb.style.opacity=0; }
+    if (idx>=0){ range.value = idx*100; setXF(idx*100); } else { let j = 0; for (let i=0;i<n;i++) if (stops[i].state<=st) j=i; range.value=j*100; setXF(j*100); xa.innerHTML = p.texts[String(st)] || xa.innerHTML; }
     const sr = S[st]; xnow.textContent = `showing state ${st} · ${sr.when} · ${sr.m?"machine save":"hand save"}${sr.pass?` · pass ${sr.pass}`:""}`; open.state = st; updateCite(p, st); }
-  range.addEventListener("input", ()=>{ const v=+range.value; setXF(v); const i = Math.round(v/100); if (Math.abs(v - i*100) < 1) showState(stops[i].state); else { const A = stops[Math.floor(v/100)]; open.state = A.state; xnow.textContent = `between stops`; } });
+  range.addEventListener("input", ()=>{ const v=+range.value; setXF(v); const i = Math.round(v/100); if (Math.abs(v - i*100) < 1) showState(stops[i].state); else { const lo = Math.floor(v/100), A = stops[lo], B = stops[Math.min(n-1,lo+1)]; open.state = A.state; xnow.textContent = `${Math.round(v%100)}% of the way from ${A.label} (state ${A.state}) to ${B.label} (state ${B.state}) · cite line stays on state ${A.state}`; } });
   $$(".xf-ctl button", enl).forEach(b=> b.addEventListener("click", ()=>{ const i = Math.max(0, Math.min(n-1, Math.round(+range.value/100) + (+b.dataset.step))); range.value=i*100; setXF(i*100); showState(stops[i].state); }));
   showState(cur);
   // wire: commentary
   $$(".seg [data-c]", enl).forEach(b=> b.addEventListener("click", ()=>{ $$(".seg [data-c]", enl).forEach(x=>x.setAttribute("aria-pressed","false")); b.setAttribute("aria-pressed","true"); const on = b.dataset.c==="on"; $("#notes", enl).hidden = !on; open.notes = on; updateCite(p, open.state); }));
   $$(".cite button", enl).forEach(b=> b.addEventListener("click", ()=>{ const u = $(".cite a", enl).href; try{ navigator.clipboard.writeText(u); b.textContent="copied"; setTimeout(()=>b.textContent="copy", 1200);}catch(e){} }));
+}
+const plain = h => { const d = document.createElement("div"); d.innerHTML = h; return (d.textContent || "").split(/\s+/).filter(Boolean); };
+function morph(ha, hb, f){
+  const a = plain(ha), b = plain(hb), n = a.length, m = b.length;
+  const L = Array.from({length:n+1}, ()=> new Uint16Array(m+1));
+  for (let i=n-1;i>=0;i--) for (let j=m-1;j>=0;j--) L[i][j] = a[i]===b[j] ? L[i+1][j+1]+1 : Math.max(L[i+1][j], L[i][j+1]);
+  const out = []; let i=0, j=0;
+  const rmO = (1-f).toFixed(2), adO = f.toFixed(2);
+  while (i<n && j<m){
+    if (a[i]===b[j]){ out.push(esc(a[i])); i++; j++; }
+    else if (L[i+1][j] >= L[i][j+1]){ out.push(`<span class="rm" style="opacity:${rmO}">${esc(a[i])}</span>`); i++; }
+    else { out.push(`<span class="ad" style="opacity:${adO}">${esc(b[j])}</span>`); j++; }
+  }
+  while (i<n) out.push(`<span class="rm" style="opacity:${rmO}">${esc(a[i++])}</span>`);
+  while (j<m) out.push(`<span class="ad" style="opacity:${adO}">${esc(b[j++])}</span>`);
+  return out.join(" ");
 }
 function noteCard(c, on){
   return `<div class="note${on?" shared":""}"><div class="v">${esc(c.text)}</div><div class="meta">${on?`stood on the shared paragraph before the split (now ¶${on.slice(1)}) · `:""}written <b>${esc(c.written)}</b> (state ${c.ws}) · answered by the <b>${esc(c.resolved)}</b> save, ${c.by==="machine"?"the machine's":"by hand"} (state ${c.rs}) · open <b>${c.min} min</b> · ${c.changed?"the paragraph changed":"the paragraph did not change"}${c.entered?" · <b>his words entered the text</b>":""}</div></div>`;
