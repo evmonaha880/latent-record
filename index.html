@@ -294,8 +294,15 @@ article.para.ks .km{color:var(--ink-2)}
 .xf-ctl{display:grid; grid-template-columns:auto 1fr auto; gap:.6rem; align-items:center; margin-top:.3rem}
 .xf-ctl input[type=range]{width:100%; accent-color:var(--film)}
 .xf-ctl button{font-family:"IBM Plex Mono",monospace; font-size:.7rem; background:none; border:1px solid var(--rule-hard); color:var(--ink-2); border-radius:2px; padding:.25rem .5rem; cursor:pointer}
-.xf-stops{display:flex; justify-content:space-between; font-family:"IBM Plex Mono",monospace; font-size:.6rem; color:var(--ink-3); letter-spacing:.04em; margin-top:.2rem; gap:.4rem; flex-wrap:wrap}
-.xf-stops span.on{color:var(--film); font-weight:600}
+.xf-ticks{display:flex; justify-content:space-between; margin:.15rem .55rem 0; font-family:"IBM Plex Mono",monospace; font-size:.58rem; color:var(--ink-3); letter-spacing:.04em}
+.xf-ticks .tk{position:relative; width:0; display:flex; flex-direction:column; align-items:center}
+.xf-ticks .tk i{display:block; width:2px; height:9px; border-radius:1px; opacity:.7}
+.xf-ticks .tk.on i{width:4px; height:12px; opacity:1}
+.xf-ticks .tk b{position:absolute; top:11px; white-space:nowrap; font-weight:500; color:var(--ink-3)}
+.xf-ticks .tk b.r1{top:22px}
+.xf-ticks .tk:last-child b{right:0}
+.xf-ticks .tk.on b{color:var(--film)}
+.xf-ticks{padding-bottom:1.7rem}
 .xf-now{font-family:"IBM Plex Mono",monospace; font-size:.68rem; color:var(--ink-2); margin-top:.35rem}
 .hist{list-style:none; margin:.2rem 0 0; padding:0; display:grid; gap:.3rem}
 .hist li{display:grid; grid-template-columns:auto auto 1fr; gap:.6rem; font-size:.8rem; line-height:1.45; align-items:baseline}
@@ -446,9 +453,9 @@ function render(p, state, notes){
   h += `</div><p class="strip-note">${p.states.length} of 587 frames · born state ${p.born} (${esc(p.hist[0].when)}) · settled state ${p.last} (${esc(p.hist[p.hist.length-1].when)}) · ${p.revisions} revisions</p>`;
   // 3 crossfade
   const stops = p.stops; const n = stops.length;
-  h += `<h4>crossfade · the passes it lived in</h4><div class="xf" id="xa"></div>
+  h += `<h4>crossfade · ${n} distinct text${n===1?"":"s"}, in order</h4><div class="xf" id="xa"></div>
   <div class="xf-ctl"><button data-step="-1" aria-label="previous stop">◀</button><input type="range" min="0" max="${(n-1)*100}" value="0" step="1" aria-label="crossfade between stops"><button data-step="1" aria-label="next stop">▶</button></div>
-  <div class="xf-stops">${stops.map((s,i)=>`<span data-i="${i}">${esc(s.label)} · state ${s.state}</span>`).join("")}</div><div class="xf-now" id="xnow"></div><div class="xf-legend">between stops the paragraph morphs word by word:<i style="background:var(--grease)"></i>leaving<i style="background:color-mix(in srgb,var(--machine) 40%,transparent)"></i>arriving</div>`;
+  <div class="xf-ticks" aria-hidden="true">${(()=>{ let row=0; return stops.map((s,i)=>{ const first = i===0 || stops[i-1].pass!==s.pass; const lab = s.published ? (first && s.pass ? `pass ${s.pass} · published` : "published") : (first ? `pass ${s.pass||"?"}` : ""); const r = lab ? (row++ % 2) : 0; return `<span class="tk${lab?" lab":""}" data-i="${i}" title="${esc(s.label)}"><i style="background:${s.pass?`var(--p${s.pass})`:"var(--film)"}"></i>${lab? `<b class="r${r}">${lab}</b>`:""}</span>`; }).join(""); })()}</div><div class="xf-now" id="xnow"></div><div class="xf-legend">between stops the paragraph morphs word by word:<i style="background:var(--grease)"></i>leaving<i style="background:color-mix(in srgb,var(--machine) 40%,transparent)"></i>arriving</div>`;
   // 4 history (folded typing runs) — steppers over scroll
   h += `<h4>history · ${p.hist.length} rows${p.revisions>p.hist.length-1?` (typing runs folded; the record keeps every state)`:""}</h4><ul class="hist">`;
   for (const r of p.hist){
@@ -498,11 +505,11 @@ function render(p, state, notes){
     if (f < 0.005 || A.state===B.state) xa.innerHTML = textOf(A.state);
     else if (f > 0.995) xa.innerHTML = textOf(B.state);
     else xa.innerHTML = morph(textOf(A.state), textOf(B.state), f);
-    $$(".xf-stops span", enl).forEach((s,j)=> s.classList.toggle("on", j===i && f<0.5 || j===i+1 && f>=0.5)); }
+    $$(".xf-ticks .tk", enl).forEach((s,j)=> s.classList.toggle("on", j===i && f<0.5 || j===i+1 && f>=0.5)); }
   function showState(s){ // a state that need not be a stop (from the hash)
     const st = stateOf(p, s); const idx = stops.findIndex(x=>x.state===st);
     if (idx>=0){ range.value = idx*100; setXF(idx*100); } else { let j = 0; for (let i=0;i<n;i++) if (stops[i].state<=st) j=i; range.value=j*100; setXF(j*100); xa.innerHTML = p.texts[String(st)] || xa.innerHTML; }
-    const sr = S[st]; xnow.textContent = `showing state ${st} · ${sr.when} · ${sr.m?"machine save":"hand save"}${sr.pass?` · pass ${sr.pass}`:""}`; open.state = st; updateCite(p, st); }
+    const sr = S[st]; const k = stops.findIndex(x=>x.state===st); xnow.textContent = `${k>=0? `stop ${k+1} of ${n} · `:""}showing state ${st} · ${sr.when} · ${sr.m?"machine save":"hand save"}${sr.pass?` · pass ${sr.pass}`:""}${k>=0 && stops[k].published? " · published":""}`; open.state = st; updateCite(p, st); }
   range.addEventListener("input", ()=>{ const v=+range.value; setXF(v); const i = Math.round(v/100); if (Math.abs(v - i*100) < 1) showState(stops[i].state); else { const lo = Math.floor(v/100), A = stops[lo], B = stops[Math.min(n-1,lo+1)]; open.state = A.state; xnow.textContent = `${Math.round(v%100)}% of the way from ${A.label} (state ${A.state}) to ${B.label} (state ${B.state}) · cite line stays on state ${A.state}`; } });
   $$(".xf-ctl button", enl).forEach(b=> b.addEventListener("click", ()=>{ const i = Math.max(0, Math.min(n-1, Math.round(+range.value/100) + (+b.dataset.step))); range.value=i*100; setXF(i*100); showState(stops[i].state); }));
   showState(cur);
