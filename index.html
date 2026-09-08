@@ -310,6 +310,7 @@ article.para.ks .km{color:var(--ink-2)}
 .cause-l{font-size:.84rem; color:var(--ink-2)} .cause-l .who{font-family:"IBM Plex Mono",monospace; font-size:.6rem; letter-spacing:.08em; text-transform:uppercase; padding:.05rem .35rem; border-radius:2px; margin-right:.3rem}
 .cause-l .who.h{color:var(--grease); border:1px solid var(--grease)} .cause-l .who.m{color:var(--machine); border:1px solid var(--machine)}
 .cause-i{font-size:.84rem; color:var(--ink); border-left:3px solid var(--ink-3); padding:.4rem .6rem; background:var(--sunk); border-radius:0 2px 2px 0; white-space:pre-wrap; max-height:22rem; overflow:auto}
+.cause-i.wide{border-left-color:var(--rule-hard); color:var(--ink-2); font-size:.8rem; max-height:9rem}
 .cause-i .k, .cause-k{display:block; font-family:"IBM Plex Mono",monospace; font-size:.6rem; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-3); margin-bottom:.2rem}
 .stages{display:grid; gap:.8rem; margin-top:.4rem}
 ul.standing{margin:0; padding-left:1rem; font-family:"IBM Plex Mono",monospace; font-size:.72rem; color:var(--ink-2); line-height:1.5; display:grid; gap:.25rem}
@@ -528,8 +529,13 @@ function causeCard(p, s, i){
   let h = `<div class="cause ${c.who}">`;
   const born = i===0;
   h += `<div class="cause-l"><span class="who ${c.who}">${c.who==="h"?"hand save":"machine save"}</span> ${born? `the paragraph appears${c.tier==="same"?", close to its final form":", recognisable but far from final"}` : `${c.saves>1?`${c.saves} saves, `:""}+${c.added}/−${c.removed} words`}${c.kills.length?` · <b>× ${esc(c.kills.join(", "))} died in this save</b>`:""}</div>`;
-  if (c.instr) h += `<div class="cause-i"><span class="k">${c.instr.is_write? "the instruction that produced this save" : `instruction ${c.instr.min} min before · candidate, not cause`}</span>“${esc(c.instr.text)}”</div>`;
-  if (c.answered.length) h += `<div class="cause-k">${c.answered.length===1?"the note this save answered":`the ${c.answered.length} notes this save answered`}</div>` + c.answered.map(x=>noteCard(x, x.on, c.after_settled.includes(x.id))).join("");
+  if (c.answered.length) h += `<div class="cause-k">${c.answered.length===1?"the note this save answered on this paragraph":`the ${c.answered.length} notes this save answered on this paragraph`}</div>` + c.answered.map(x=>noteCard(x, x.on, c.after_settled.includes(x.id))).join("");
+  if (c.instr){
+    const targeted = c.directives.length>0 || c.save_paras<=2;
+    const k = targeted ? (c.instr.is_write ? "the instruction that produced this save" : `Evan's last message, ${c.instr.min} min before this ${c.who==="h"?"hand edit":"save"} · candidate, not cause`)
+                       : `${c.instr.is_write ? "the message that set this save going" : `Evan's last message, ${c.instr.min} min before`} · the save changed ${c.save_paras} paragraphs and ${c.save_words} words across the essay · joined by time, not an edit to this paragraph`;
+    h += `<div class="cause-i${targeted?"":" wide"}"><span class="k">${k}</span>“${esc(c.instr.text)}”</div>`;
+  }
   if (c.directives.length) h += `<div class="cause-k">directive answered by this save</div>` + c.directives.map(d=>`<div class="note dir"><div class="v">${esc(d.text)}</div><div class="meta">item ${d.item} of Evan's ${esc(d.when)} message · ${d.phrase?`names this paragraph by “${esc(d.phrase)}”`:`names the section ${esc(d.section)}`}</div></div>`).join("");
   const sameMsg = t => c.instr && (t.said.slice(0,80) === c.instr.text.slice(0,80));
   const trig = c.trigger.filter(t=>!sameMsg(t));
