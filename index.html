@@ -547,13 +547,16 @@ function causeCard(p, s, i){
     const targeted = its.length>0 || c.directives.length>0 || c.save_paras<=2;
     const k = targeted ? (c.instr.is_write ? "the instruction that produced this save" : `Evan's last message, ${c.instr.min} min before this ${c.who==="h"?"hand edit":"save"} · candidate, not cause`)
                        : `${c.instr.is_write ? "the message that set this save going" : `Evan's last message, ${c.instr.min} min before`} · the save changed ${c.save_paras} paragraphs and ${c.save_words} words across the essay${c.items_total? ` · its ${c.items_total} asks name other paragraphs` : ""} · joined by time, not an edit to this paragraph`;
-    if (!c.items_repeat) h += `<div class="cause-i${targeted && !its.length?"":" wide"}"><span class="k">${its.length? "the whole message, for the record" : k}</span>“${esc(c.instr.text)}”</div>`;
+    const placedElsewhere = !its.length && c.asks_read > 0 && (c.asks_placed||[]).length;
+    if (c.items_repeat) {}
+    else if (placedElsewhere) h += `<div class="hint">The save came from Evan's ${esc(c.instr.when)} message. Its ${c.asks_read} ask${c.asks_read===1?"":"s"} were read by hand and none names this paragraph: ${c.asks_placed.map(a=>`${a.n} on ${a.where}`).join(", ")}. It changed ${c.save_paras} paragraphs and ${c.save_words} words across the essay.</div>`;
+    else h += `<div class="cause-i${targeted && !its.length?"":" wide"}"><span class="k">${its.length? "the whole message, for the record" : k}</span>“${esc(c.instr.text)}”</div>`;
   }
   if (c.directives.length) h += `<div class="cause-k">directive answered by this save</div>` + c.directives.map(d=>`<div class="note dir"><div class="v">${esc(d.text)}</div><div class="meta">item ${d.item} of Evan's ${esc(d.when)} message · ${d.phrase?`names this paragraph by “${esc(d.phrase)}”`:`names the section ${esc(d.section)}`}</div></div>`).join("");
   const sameMsg = t => c.instr && (t.said.slice(0,80) === c.instr.text.slice(0,80));
   const trig = c.trigger.filter(t=>!sameMsg(t));
   if (trig.length) h += trig.map(t=>`<div class="trigger"><span class="k">candidate · the message that triggered the round</span><br>${esc(t.when)}, ${t.min} min before the ${esc(t.answer_when)} save that answered ${t.answered} notes (${t.kind}): “${esc(t.said)}”</div>`).join("");
-  else if (c.instr && c.trigger.length) h += `<div class="hint">That instruction is also the message that triggered the round: the ${esc(c.trigger[0].answer_when)} save answered ${c.trigger[0].answered} notes across the essay.</div>`;
+  else if (c.instr && c.trigger.length) h += `<div class="hint">The same message triggered the round: the ${esc(c.trigger[0].answer_when)} save answered ${c.trigger[0].answered} notes across the essay.</div>`;
   if (c.meanwhile.length) h += `<div class="cause-k">cleared between stops, by saves that changed no words here</div>` + c.meanwhile.map(x=>noteCard(x, x.on, false)).join("");
   if (c.written.length) h += `<div class="cause-k">written in the margin since the previous stop, still standing</div><ul class="standing">` + c.written.map(x=>`<li>${c.after_settled.includes(x.id)?"after the text settled · ":""}${esc(x.written)}: “${esc(x.text.length>140? x.text.slice(0,140)+"…" : x.text)}”${x.rs!=null?` · answered at stop ${p.stops.findIndex(s=>s.state>=x.rs)+1 || p.stops.length}`:""}</li>`).join("") + `</ul>`;
   if (!c.instr && !c.answered.length && !c.directives.length && !c.written.length && !c.meanwhile.length && !born) h += `<div class="hint">No note, instruction or directive in the record is tied to this save${c.who==="h"?": a hand edit with nothing said about it":""}.</div>`;
