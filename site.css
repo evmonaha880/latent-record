@@ -437,3 +437,10 @@ details.docfull .doc{margin-top:10px}
 .diffnote .chgrow b{font-weight:600;text-transform:none}
 .diffnote .chgrow .chgt{margin-top:2px}
 .open.nohand .hw{text-decoration:none}
+
+main.page p.plainp{max-width:66ch;font-size:17px;line-height:1.55}
+main.page ul.plain{list-style:none;padding:0;margin:6px 0 8px}
+main.page ul.plain li{margin:0 0 4px;font-size:15px}
+main.page code.wrap{word-break:break-all;white-space:normal}
+ol.evening .lab{display:block;font-family:Franklin,sans-serif;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--graphite);margin:0 0 3px}
+main.page h2#who,main.page h2#weeks,main.page h2#dots,main.page h2#checked,main.page h2#gaps,main.page h2#archive{margin-top:38px}
