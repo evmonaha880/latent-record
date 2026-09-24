@@ -452,3 +452,6 @@ main.page h2#who,main.page h2#weeks,main.page h2#dots,main.page h2#checked,main.
 .margin .e.pair-hot,.notestrip .si.pair-hot{box-shadow:inset 3px 0 0 var(--yellow)}
 
 .state .rw{font-weight:600;color:var(--ink)}
+
+.diffnote a.showlast{font-family:Franklin,sans-serif;font-size:12px;letter-spacing:.06em;text-transform:uppercase;margin-right:6px}
+.margin details.morecards>summary{cursor:pointer;font-family:Franklin,sans-serif;font-size:12px;letter-spacing:.06em;text-transform:uppercase;margin:6px 0}
