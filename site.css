@@ -1,0 +1,439 @@
+@font-face{font-family:"Schola";font-weight:400;font-style:normal;font-display:swap;src:url(fonts/schola-regular.woff2) format("woff2")}
+@font-face{font-family:"Schola";font-weight:400;font-style:italic;font-display:swap;src:url(fonts/schola-italic.woff2) format("woff2")}
+@font-face{font-family:"Schola";font-weight:700;font-style:normal;font-display:swap;src:url(fonts/schola-bold.woff2) format("woff2")}
+@font-face{font-family:"Schola";font-weight:700;font-style:italic;font-display:swap;src:url(fonts/schola-bolditalic.woff2) format("woff2")}
+@font-face{font-family:"Charter Adjusted";font-weight:400;font-style:normal;font-display:swap;size-adjust:96.9%;src:url(fonts/charter-roman.woff2) format("woff2")}
+@font-face{font-family:"Charter Adjusted";font-weight:400;font-style:italic;font-display:swap;size-adjust:95.9%;src:url(fonts/charter-italic.woff2) format("woff2")}
+@font-face{font-family:"Charter Adjusted";font-weight:700;font-style:normal;font-display:swap;size-adjust:95.7%;src:url(fonts/charter-bold.woff2) format("woff2")}
+@font-face{font-family:"Franklin";font-weight:400;font-style:normal;font-display:swap;src:url(fonts/franklin-400.woff2) format("woff2")}
+@font-face{font-family:"Franklin";font-weight:500;font-style:normal;font-display:swap;src:url(fonts/franklin-500.woff2) format("woff2")}
+@font-face{font-family:"Franklin";font-weight:600;font-style:normal;font-display:swap;src:url(fonts/franklin-600.woff2) format("woff2")}
+
+:root{--ground:#FBFBF8;--ink:#1A1918;--graphite:#5F5B57;--red:#A12A22;--yellow:#FFB300;--shade:#E0DCD3;--rule:#D9D6D0;--head:#F0EEE8;--hot1:#F1EEE6;--hot2:#D9D4C8;--hot3:#B3ACA0;--hot4:#5F5B57}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--ground:#14110E;--ink:#EDE8DE;--graphite:#A8A39C;--red:#D2655B;--shade:#332E27;--rule:#3A352E;--head:#1E1A15;--hot1:#1E1A15;--hot2:#3A352E;--hot3:#6A6459;--hot4:#A8A39C}}
+:root[data-theme="dark"]{--ground:#14110E;--ink:#EDE8DE;--graphite:#A8A39C;--red:#D2655B;--shade:#332E27;--rule:#3A352E;--head:#1E1A15;--hot1:#1E1A15;--hot2:#3A352E;--hot3:#6A6459;--hot4:#A8A39C}
+html{background:var(--ground)}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:Schola,"Charter Adjusted",Charter,Georgia,serif;font-size:18px;line-height:1.45;-webkit-font-smoothing:antialiased}
+a{color:var(--ink);text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px}
+button{font:inherit;color:inherit}
+.fr,.lab{font-family:Franklin,"Libre Franklin","Helvetica Neue",Arial,sans-serif;font-variant-numeric:tabular-nums;font-feature-settings:"tnum"}
+.lab{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--graphite)}
+.sc{font-variant-caps:small-caps;letter-spacing:.06em}
+
+/* the slim bar and the one yellow rule */
+.bar{position:sticky;top:0;z-index:5;background:var(--ground);display:flex;align-items:center;gap:16px;height:44px;padding:0 20px;border-bottom:1px solid var(--ink)}
+ .bar .wip{font-family:var(--sans);font-size:9px;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--ground);background:var(--red);padding:2px 5px;border-radius:2px;margin-left:8px;vertical-align:2px;white-space:nowrap}
+ /* The bar is a fixed flex row; at 390px the chip pushed it to 425px and broke the no-sideways-scroll
+    rule. Below 760px the footer's "Local working copy" line carries the label instead. */
+ @media(max-width:760px){.bar .wip{display:none}}
+.bar .wm{font-weight:700;font-size:17px;margin-right:auto;white-space:nowrap;text-decoration:none}
+.bar .sw{display:inline-flex;border:1px solid var(--ink)}
+.bar .sw button{background:none;border:0;padding:0 10px;height:28px;font-family:Franklin,sans-serif;font-size:11px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;color:var(--ink)}
+.bar .sw button.on{background:var(--ink);color:var(--ground)}
+.bar .sw a{display:inline-flex;align-items:center;padding:0 10px;height:28px;font-family:Franklin,sans-serif;font-size:11px;letter-spacing:.1em;text-transform:uppercase;text-decoration:none;color:var(--ink)}
+.bar .sw a:hover{background:var(--head)}
+.bar .menu{position:relative}
+.bar .menu summary{list-style:none;cursor:pointer;font-family:Franklin,sans-serif;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink);padding:8px 0}
+.bar .menu summary::-webkit-details-marker{display:none}
+.bar .menu:not([open]) .dd{display:none}
+.bar .menu .dd{position:absolute;top:36px;left:0;min-width:260px;max-width:calc(100vw - 28px);background:var(--ground);border:1px solid var(--ink);padding:8px 0;z-index:6}
+.bar .menu .dd a{display:block;padding:7px 14px;text-decoration:none;font-size:15px}
+.bar .menu .dd a:hover{background:var(--head)}
+.bar .menu .dd .lab{display:block;padding:8px 14px 2px}
+.bar .pdf{font-family:Franklin,sans-serif;font-size:11px;letter-spacing:.1em;text-transform:uppercase;text-decoration:none;border-bottom:1px solid var(--ink)}
+.yb{position:sticky;top:44px;z-index:5;height:4px;background:var(--yellow);border-bottom:1px solid var(--ink)}
+.bar .pdf.m{display:none}
+
+main{padding:0 20px 60px;max-width:1040px;margin:0 auto}  /* no overflow rule anywhere: it breaks position:sticky on every descendant; the checks assert scrollWidth == viewport instead */
+.lede{font-size:16px;max-width:60ch;margin:14px 0 22px;line-height:1.45}
+.lede details{display:inline}
+.lede summary{display:inline;cursor:pointer;font-family:Franklin,sans-serif;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink);text-decoration:underline;text-underline-offset:3px}
+.lede details[open] summary{display:block;margin-bottom:6px}
+.lede .four{font-size:16px;max-width:60ch;margin:6px 0 0;padding:10px 14px;border-left:2px solid var(--ink);background:var(--head)}
+.masthead{margin:8px 0 28px}
+h1.title{font-weight:700;font-size:44px;line-height:1.08;margin:0 0 10px;max-width:16ch;letter-spacing:-.005em}
+.byline{font-size:16px;margin:0}
+.byline .lab{margin-left:8px}
+
+/* the chart band (day 3): static SVG, ink bars, one yellow now-column, no red; the fold on phones */
+.chartband{margin:6px 0 34px;max-width:1000px}
+.chartband .chartlab{margin:0 0 6px;color:var(--ink)}
+.chartband .full svg,.chartband .fold svg,.chartpage svg{display:block;width:100%;height:auto;max-width:100%}
+.chartband .fold{display:none;text-decoration:none;color:inherit}
+.chartband .cap,.chartpage .cap{font-size:14.5px;line-height:1.45;max-width:72ch;margin:8px 0 0;color:var(--ink)}
+.chartband .cap a{font-family:Franklin,sans-serif;font-size:11px;letter-spacing:.1em;text-transform:uppercase;text-decoration:underline;text-underline-offset:3px;margin-left:6px;white-space:nowrap}
+.chartband .fold .cap{display:block;text-decoration:underline;text-decoration-color:var(--rule);text-underline-offset:3px}
+svg.chart text{font-family:Franklin,"Libre Franklin","Helvetica Neue",Arial,sans-serif;font-variant-numeric:tabular-nums;font-feature-settings:"tnum";fill:var(--ink)}
+svg.chart .lab{font-size:11px;letter-spacing:.1em;text-transform:uppercase;fill:var(--graphite)}
+svg.chart .labi{font-size:11px;letter-spacing:.1em;text-transform:uppercase;fill:var(--ink)}
+svg.chart .num{font-size:9px;fill:var(--graphite)}
+svg.chart.band .num,svg.chart.band .sec{font-size:10.5px}
+svg.chart .sec{font-size:10px;letter-spacing:.08em;text-transform:uppercase;fill:var(--ink)}
+svg.chart .bar{fill:var(--ink)}
+svg.chart .ntick{stroke:var(--ink);stroke-width:1}
+svg.chart .rule{stroke:var(--ink);stroke-width:1}
+svg.chart .secrule{stroke:var(--rule);stroke-width:1}
+svg.chart .silence{stroke:var(--graphite);stroke-width:1;stroke-dasharray:2 4}
+svg.chart .merge{stroke:var(--ink);stroke-width:1}
+svg.chart .merge-l{fill:var(--ink)}
+svg.chart .exline{stroke:var(--ink);stroke-width:1.2}
+svg.chart .round{fill:var(--ground);stroke:var(--ink);stroke-width:1.2}
+svg.chart .story{fill:var(--ink)}
+svg.chart .paste{stroke:var(--ink);stroke-width:1.6}
+svg.chart .now{fill:var(--yellow);stroke:var(--ink);stroke-width:1}
+svg.chart a.row:hover .bar,svg.chart a.row:focus .bar{fill:var(--graphite)}
+svg.chart a.row:hover text,svg.chart a.row:focus text{text-decoration:underline}   /* no red on the chart, hover included */
+svg.chart a{outline:none}
+.chartpage h1{font-weight:700;font-size:30px;line-height:1.15;margin:22px 0 8px;max-width:24ch}
+.chartpage .scroller{overflow-x:auto;max-width:100%}
+.chartpage .scroller svg{min-width:900px}
+.chartpage .meth{font-family:Franklin,sans-serif;font-size:11.5px;line-height:1.55;color:var(--graphite);max-width:110ch;margin:10px 0 0}
+
+/* section headings: shaded, clickable, header notes collapsed */
+h2.sec{font-weight:700;font-size:26px;line-height:1.2;margin:38px 0 14px;padding:10px 14px;background:var(--head);border-left:3px solid var(--ink);max-width:660px;box-sizing:border-box}
+h2.sec a{text-decoration:none}
+h2.sec .n{font-family:Franklin,sans-serif;font-size:11px;letter-spacing:.1em;color:var(--graphite);font-weight:400;display:block;margin-bottom:4px}
+.secnotes{max-width:660px;margin:-6px 0 18px}
+.secnotes summary{cursor:pointer;font-family:Franklin,sans-serif;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--graphite)}
+.secnotes .e{padding:8px 12px;margin:8px 0;background:var(--head);border-left:2px solid var(--ink);font-size:14.5px;line-height:1.4}
+.secnotes .e .l{font-family:Franklin,sans-serif;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;font-weight:600}
+.secnotes .e .l span{font-weight:400;color:var(--graphite);letter-spacing:.02em;text-transform:none}
+
+/* paragraphs in the essay: text column + the margin marks */
+.para{display:grid;grid-template-columns:minmax(0,660px) 300px;gap:40px;margin:0 0 22px;align-items:start;scroll-margin-top:60px}
+h2.sec{scroll-margin-top:60px}
+.para .pub p{margin:0;hyphens:auto;text-wrap:pretty}
+.para .mark{display:flex;align-items:center;gap:10px;padding-top:4px}
+.para .num{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--red);color:var(--red);padding:6px 10px;min-height:32px;box-sizing:border-box;font-family:Franklin,sans-serif;font-size:11px;letter-spacing:.06em;font-variant-numeric:tabular-nums;font-feature-settings:"tnum";background:none;cursor:pointer;text-decoration:none;white-space:nowrap}
+.para .num[aria-expanded="true"]{background:var(--red);color:var(--ground)}
+.para .num:focus-visible,.ctl:focus-visible,input:focus-visible,.mode:focus-visible,.back:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.para .untr{font-family:Franklin,sans-serif;font-size:11px;letter-spacing:.06em;color:var(--graphite)}
+.hot{display:inline-block;width:12px;height:12px;border:1px solid var(--ink);box-sizing:border-box}
+.hot.s1{background:var(--hot1)}.hot.s2{background:var(--hot2)}.hot.s3{background:var(--hot3)}.hot.s4{background:var(--hot4)}
+.badge{width:14px;height:14px;display:inline-block;vertical-align:middle}
+.badge circle,.badge path,.badge rect{stroke:var(--ink);fill:none;stroke-width:1.2}
+.badge .fill{fill:var(--ink)}
+.badge .half{fill:var(--ink)}
+.badge.untraced circle{stroke-dasharray:2 2}
+.para.open-here .pub,.para.open-here .mark{display:none}
+.stone{display:block;margin:6px 0 6px 18px;font-family:Franklin,sans-serif;font-size:13px;letter-spacing:.14em;line-height:1.7;overflow-wrap:anywhere;color:var(--ink)}
+.stone .line{display:block}
+.kh,.km{text-decoration:none}
+body.record .kh{text-decoration:underline solid var(--ink);text-decoration-thickness:1px;text-underline-offset:4px}
+
+/* photographs at their PDF positions */
+figure.photo{margin:8px 0 26px;max-width:660px}
+figure.photo img{display:block;width:100%;height:auto;background:var(--head)}
+figure.photo .dith{image-rendering:pixelated}
+figure.photo figcaption{margin-top:6px;font-family:Franklin,sans-serif;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--graphite);line-height:1.5}
+figure.photo .rec{display:none}
+body.record figure.photo .rec{display:inline}
+
+/* the opened record (from prototype v15) */
+.open{border-top:1px solid var(--ink);border-bottom:1px solid var(--ink);padding:16px 0 18px;margin:0 0 22px;grid-column:1 / -1}
+.open[hidden]{display:none}
+.open .head{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:10px;position:sticky;top:49px;background:var(--ground);z-index:2;padding:6px 0}
+.open .head .pn{font-family:Franklin,sans-serif;font-size:11px;color:var(--graphite);letter-spacing:.06em}
+.open .head .hcount{color:var(--red);font-size:11.5px;font-weight:600}
+.open .head .hbadge{font-size:10.5px;letter-spacing:.04em;color:var(--graphite)}
+.back{margin-left:auto;background:none;border:0;border-bottom:1px solid var(--ink);padding:10px 0;color:var(--ink);cursor:pointer;min-height:44px;font-family:Franklin,sans-serif;font-size:11px;letter-spacing:.1em;text-transform:uppercase}
+.open .plede{font-size:16px;max-width:60ch;margin:0 0 10px}
+.open .plede a{font-family:Franklin,sans-serif;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink)}
+.state{font-size:16px;margin:0 0 10px;scroll-margin-top:110px}
+.state .tally{color:var(--graphite)}
+.playrow{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 12px}
+.mode{border:1px solid var(--ink);background:none;color:var(--ink);font-family:Franklin,sans-serif;font-size:11px;letter-spacing:.08em;text-transform:uppercase;padding:0 12px;height:36px;cursor:pointer;min-width:230px;text-align:left;display:inline-flex;align-items:center;gap:8px}
+.mode svg{width:10px;height:10px}
+.mode svg *{fill:currentColor}
+.slider{display:flex;align-items:center;gap:10px;margin:0 0 6px}
+.ctl{border:1px solid var(--ink);background:none;color:var(--ink);min-width:44px;height:44px;display:inline-flex;align-items:center;justify-content:center;font-family:Franklin,sans-serif;font-size:18px;cursor:pointer;padding:0 14px}
+.ctl[disabled]{color:var(--graphite);cursor:default}
+.track{position:relative;flex:1;height:64px}
+.track input{position:absolute;inset:0;width:100%;margin:0;opacity:0;cursor:pointer;height:64px}
+.track .line{position:absolute;left:0;right:0;top:36px;height:1px;background:var(--ink)}
+.track .stop{position:absolute;border:1px solid var(--ink);border-radius:50%;background:var(--ground);pointer-events:none;box-sizing:border-box}
+.track .stop.m{background:var(--graphite)}
+.track .stop.cur{box-shadow:0 0 0 2px var(--ground),0 0 0 3.5px var(--ink)}
+.track:focus-within .stop.cur{box-shadow:0 0 0 2px var(--ground),0 0 0 3.5px var(--ink),0 0 0 6px var(--shade)}
+.track .stop.fin{background:var(--yellow);border-color:var(--ink)}
+.track .stop.z{border-style:dashed}
+.track .stop.ed{border-style:dashed;background:var(--head)}   /* an edition before the essay: dashed ring, sized by nothing, never yellow */
+.track .tick.merge{top:24px;height:12px;border-left:1px solid var(--ink);padding-left:4px;font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--graphite);line-height:12px}
+.prelabel{font-family:Franklin,sans-serif;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--graphite)}
+/* the note-card variant at a negative stop */
+.margin .e.birth .stood,.notestrip .si.birth .stood{font-style:italic;color:var(--graphite);font-size:13.5px;line-height:1.4;margin-top:3px;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden;cursor:pointer}
+.margin .e.birth .stood.full,.notestrip .si.birth .stood.full{display:block;-webkit-line-clamp:unset;overflow:visible}
+.margin .e.birth .ansline,.notestrip .si.birth .ansline{margin-top:7px;padding-top:6px;border-top:1px solid var(--red);font-size:13px;line-height:1.4}
+.margin .e.birth .ansline .q,.notestrip .si.birth .ansline .q{color:var(--ink)}
+.margin .e.birth .became,.notestrip .si.birth .became{font-size:12.5px;margin-top:5px}
+.margin .e.birth .became .b,.notestrip .si.birth .became .b{display:inline}
+/* before the essay: Record mode only, closed by default; one edition at a time */
+.before{display:none;margin-top:48px;border-top:1px solid var(--ink);padding-top:8px}
+body.record .before{display:block}
+.before .lede{margin:6px 0 14px;max-width:72ch}
+.before .edview summary{cursor:pointer;font-family:Franklin,sans-serif;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink);text-decoration:underline;text-underline-offset:3px;padding:6px 0}
+.before .edsw{display:inline-flex;border:1px solid var(--ink);margin:10px 0 8px}
+.before .edsw button{background:none;border:0;padding:0 12px;height:32px;font-family:Franklin,sans-serif;font-size:11px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;color:var(--ink);font-variant-numeric:tabular-nums;font-feature-settings:"tnum"}
+.before .edsw button.on{background:var(--ink);color:var(--ground)}
+.before .edhead{font-size:15px;color:var(--graphite);margin:0 0 16px;max-width:72ch}
+.before .edpara{display:grid;grid-template-columns:minmax(0,660px) 300px;gap:40px;margin:0 0 22px;align-items:start}
+.before .edpara .pub p{margin:0;hyphens:auto;text-wrap:pretty}
+.before .edpara.h .pub p{font-weight:700}
+.before .edpara.q .pub p{color:var(--graphite);font-size:15px;line-height:1.45}
+.before .edpara.q .pub .lab{display:block;margin-bottom:4px}
+.before .edpara .margin .e.birth .stood .earlier{font-style:normal;font-family:Franklin,sans-serif;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--graphite)}
+.before .edtail{font-size:13.5px;color:var(--graphite);max-width:72ch}
+/* what was cut: Record mode only */
+.cut{display:none;margin-top:48px;border-top:1px solid var(--ink);padding-top:8px}
+body.record .cut{display:block}
+.cut .cutchunk{display:grid;grid-template-columns:minmax(0,660px) 300px;gap:40px;margin:0 0 26px;align-items:start}
+.cut .cutchunk .pub p{margin:0;color:var(--graphite);hyphens:auto}
+.cut .lede{margin:6px 0 18px}
+.track .tick{position:absolute;top:50px;font-size:11px;color:var(--graphite);white-space:nowrap;pointer-events:none;font-family:Franklin,sans-serif;font-variant-numeric:tabular-nums;font-feature-settings:"tnum"}
+.track .tick.cur{color:var(--ink);font-weight:600}
+.track .day{position:absolute;top:-2px;white-space:nowrap;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--graphite);font-family:Franklin,sans-serif;pointer-events:none}
+.drafts{font-size:13.5px;color:var(--graphite);margin:0 0 14px}
+.rbody{display:grid;grid-template-columns:minmax(0,660px) 300px;gap:40px;align-items:start}
+.text p{margin:0;hyphens:auto;text-wrap:pretty}
+.text.clean .ins{background:none}.text.clean .del{display:none}
+.hw{text-decoration:underline solid var(--ink);text-decoration-thickness:1px;text-underline-offset:4px}
+/* 2026-09-10, Evan's ruling: a ~~strikethrough~~ he typed in Obsidian is an INSTRUCTION to delete,
+   and Claude performs the deletion — so it is a removal like any other and wears the same red as .del,
+   and it is never counted or underlined as a word written by hand. It used to be an ink strikethrough
+   that nothing on the page explained, which is why a word could appear struck twice in two colours.
+   No legend entry is added: the legend is already overcrowded (its own issue). */
+.hs{color:var(--graphite);text-decoration:line-through;text-decoration-color:var(--red);text-decoration-thickness:1.5px}
+.ins{background:var(--shade);transition:color .45s ease,background .45s ease,filter .45s ease}
+.ins.dev{color:transparent;background:transparent;filter:blur(3px)}
+.del{color:var(--graphite);text-decoration:line-through;text-decoration-color:var(--red);text-decoration-thickness:1.5px}
+.diffnote{font-size:12.5px;color:var(--graphite);margin-top:8px}
+.margin .e{padding:10px 12px;margin:0 0 10px;background:var(--head);border-left:2px solid var(--ink)}
+.margin .l,.notestrip b{font-family:Franklin,sans-serif;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;font-weight:600}
+.notestrip b{margin-right:6px}
+.margin .l span{font-weight:400;color:var(--graphite);letter-spacing:.02em;text-transform:none}
+.margin .t{font-size:14.5px;line-height:1.4;margin-top:3px;white-space:pre-line}
+.margin .b{font-size:12.5px;color:var(--graphite);margin-top:3px}
+.margin details summary{cursor:pointer;font-size:12.5px;text-decoration:underline;text-underline-offset:3px}
+.margin .e.here{border-left-color:var(--red)}
+.margin .e.quiet{background:none;border-left-color:var(--rule)}
+.margin .e .jump{font-size:12.5px;margin-top:4px}
+.e.here .chk,.si.here .chk{stroke-dasharray:24;stroke-dashoffset:24;animation:draw .5s ease-out forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+.chk{width:14px;height:14px;vertical-align:-2px;margin-right:4px}
+.chk path{stroke:var(--red)}
+.ans{color:var(--red);font-family:Franklin,sans-serif;font-size:11px;letter-spacing:.08em;text-transform:uppercase;font-weight:600}
+.legend{margin-top:16px;padding-top:8px;border-top:1px solid var(--ink);font-size:13.5px;line-height:1.5;max-width:90ch;position:sticky;bottom:0;background:var(--ground)}
+.vleg{display:flex;flex-wrap:wrap;gap:14px 22px;align-items:baseline;font-size:15px}
+.vleg .k{display:inline-flex;align-items:center;gap:8px}
+.vleg .k small{font-family:Franklin,sans-serif;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--graphite)}
+.vleg .dot{display:inline-block;width:9px;height:9px;border:1px solid var(--ink);border-radius:50%;background:var(--ground)}
+.vleg .dot.m{background:var(--graphite)}
+.vleg .dot.fin{background:var(--yellow)}
+.legend details{margin-top:8px}.legend summary{cursor:pointer;font-size:12.5px;color:var(--graphite);text-decoration:underline;text-underline-offset:3px}
+.legend .full{font-size:13px;color:var(--graphite);margin-top:6px}
+.notestrip{display:none}
+.notestrip .si{display:block;padding:8px 12px;margin:0 0 12px;background:var(--head);border-left:2px solid var(--ink);font-size:14px;line-height:1.4;cursor:pointer}
+.notestrip .si.here{border-left-color:var(--red)}
+.notestrip .si::after{content:'▾';float:right;color:var(--graphite);font-family:Franklin,sans-serif;font-size:12px}
+.notestrip .si.open::after{content:'▴'}
+.notestrip .si .t{margin-top:4px;white-space:pre-line}
+.notestrip .si .more .t{max-height:40vh;overflow:auto}
+.notestrip .si .jump{margin-top:6px;font-size:12.5px}
+.notestrip .si .b{font-size:12.5px;color:var(--graphite);margin-top:4px}
+.typing::after{content:'▍';color:var(--ink);animation:blink .6s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+
+/* the walkthrough: one soft callout at a time */
+.coach{position:fixed;inset:0;background:rgba(251,251,248,.55);z-index:9;cursor:pointer}
+:root:not([data-theme="light"]) .coach{background:rgba(20,17,14,.55)}
+:root[data-theme="light"] .coach{background:rgba(251,251,248,.55)}
+@media (prefers-color-scheme: light){:root:not([data-theme="dark"]) .coach{background:rgba(251,251,248,.55)}}
+.coach .ring{position:fixed;border-radius:10px;box-shadow:0 0 0 4px var(--ground),0 0 0 6px var(--ink);pointer-events:none;transition:all .35s ease}
+.coach .cl{position:fixed;max-width:300px;font-size:17px;line-height:1.4;color:var(--ink);background:var(--ground);border:1px solid var(--ink);border-radius:12px;padding:12px 16px 10px;box-shadow:0 6px 20px rgba(0,0,0,.08);transition:all .35s ease}
+.coach .cl::before{content:'';position:absolute;top:-7px;left:22px;width:12px;height:12px;background:var(--ground);border-left:1px solid var(--ink);border-top:1px solid var(--ink);transform:rotate(45deg)}
+.coach .cl.up::before{top:auto;bottom:-7px;transform:rotate(225deg)}
+.coach .cl small{display:block;margin-top:6px;font-family:Franklin,sans-serif;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--graphite)}
+
+.method{margin-top:40px;border-top:1px solid var(--ink);padding-top:10px;font-size:13px;color:var(--graphite);line-height:1.5;max-width:80ch}
+footer.site{margin:60px 0 0;border-top:1px solid var(--ink);padding-top:12px;font-size:13.5px;color:var(--graphite);max-width:80ch}
+footer.site a{color:var(--graphite)}
+
+@media (max-width:760px){
+  body{font-size:17px;line-height:1.5}
+  main{padding:0 14px 40px}
+  .bar{padding:0 14px;gap:10px}
+  .bar .wm{font-size:15px}
+  .bar .menu summary .w{display:none}
+  .bar .menu summary{font-size:15px;letter-spacing:0;padding:8px 4px}
+  .bar .sw button{padding:0 8px}
+  .bar .menu .dd{left:auto;right:-120px}
+  .bar .pdf.d{display:none}.bar .pdf.m{display:block}
+  h1.title{font-size:34px}
+  h2.sec{font-size:22px}
+  .para,.rbody{grid-template-columns:minmax(0,1fr);gap:10px}  /* minmax(0,…): a bare 1fr is min-content wide and one long token widens the page */
+  .para .mark{padding-top:0}
+  .notestrip{display:block}#margin,.margin{display:none}
+  .legend{position:static}
+  .track .tick.mid{display:none}
+  .track .tick.merge .w{display:none}   /* the merge tick carries no text on a phone */
+  .cut .cutchunk,.before .edpara{grid-template-columns:minmax(0,1fr);gap:10px}
+  .before .edpara .margin{display:block}
+  .chartband .full{display:none}.chartband .fold{display:block}
+  .chartpage .scroller svg{min-width:1280px}
+  .mode{min-width:0}
+}
+@media (prefers-reduced-motion: reduce){.ins,.del{transition:none}.typing::after{animation:none}.e.here .chk,.si.here .chk,.chk{animation:none;stroke-dashoffset:0}.coach .ring,.coach .cl{transition:none}}
+html[data-motion="reduce"] .ins,html[data-motion="reduce"] .del{transition:none}
+html[data-motion="reduce"] .typing::after{animation:none}
+html[data-motion="reduce"] .chk{animation:none;stroke-dashoffset:0}
+/* ---- the pages around the essay (plan step 3, 2026-09-14): before/ cut/ how/ exchanges/ and how/instructions/ */
+main.page h1{font-weight:700;font-size:30px;line-height:1.15;margin:22px 0 8px;max-width:26ch}
+main.page h2{font-weight:700;font-size:20px;line-height:1.25;margin:36px 0 10px;padding-top:10px;border-top:1px solid var(--ink);max-width:72ch}
+main.page h3{font-family:Franklin,sans-serif;font-weight:600;font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:var(--graphite);margin:22px 0 6px}
+main.page h4{font-size:15px;margin:1.1em 0 .3em}
+main.page p{max-width:66ch}
+main.page .b{font-family:Franklin,sans-serif;font-size:12.5px;line-height:1.5;color:var(--graphite)}
+main.page p.boundary{font-family:Franklin,sans-serif;font-size:13px;letter-spacing:.02em;color:var(--graphite);border-left:2px solid var(--ink);padding-left:10px;margin:6px 0 20px}
+main.page .doc p{margin:0 0 1em;max-width:66ch}
+main.page .doc h4{font-weight:700}
+main.page .doc ul,main.page .turn ul{max-width:66ch;padding-left:20px}
+main.page .doc blockquote,main.page .turn blockquote,main.page blockquote.thesis{margin:10px 0 14px;padding:8px 14px;border-left:2px solid var(--ink);background:var(--head);max-width:62ch}
+main.page blockquote.thesis p{margin:0;font-size:18px}
+main.page .method{margin-top:40px}
+table.cands{border-collapse:collapse;font-size:14.5px;margin:8px 0 14px;max-width:72ch}
+table.cands th{font-family:Franklin,sans-serif;font-weight:600;font-size:11.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--graphite)}
+table.cands td,table.cands th{border-bottom:1px solid var(--rule);padding:6px 14px 6px 0;text-align:left;vertical-align:top}
+ul.cutlist{list-style:none;padding:0;margin:0 0 6px;max-width:74ch}
+ul.cutlist li{margin:0 0 10px;padding:2px 0 2px 12px;border-left:2px solid var(--rule)}
+ul.cutlist .t{display:block}
+ul.cutlist .b{display:block;margin-top:2px}
+ul.cutlist .b.evan{margin-top:6px;color:var(--ink);font-family:Schola,serif;font-size:14px}
+main.page .identity{font-family:Franklin,sans-serif;font-variant-numeric:tabular-nums;background:var(--head);padding:1px 6px}
+main.page .cutchunk{display:grid;grid-template-columns:minmax(0,660px) 300px;gap:40px;margin:0 0 26px;align-items:start}
+main.page .cutchunk .pub p{margin:0;color:var(--graphite);hyphens:auto}
+main.page .cutchunk .margin{font-size:14px}
+main.page code,main.page pre.instr{overflow-wrap:anywhere;word-break:break-word}
+main.page ul{overflow-wrap:anywhere}
+@media (max-width:760px){main.page .cutchunk{grid-template-columns:minmax(0,1fr);gap:10px}}
+.xch{margin:28px 0 44px}
+.xch h2{margin-top:0}
+.xch .card{max-width:66ch;background:var(--head);border-left:2px solid var(--ink);padding:8px 12px;margin:8px 0 4px}
+.xch .anchor{display:block;position:relative;top:-60px;visibility:hidden}
+.turn{margin:12px 0;padding:10px 12px;border-left:2px solid var(--ink);max-width:76ch;background:var(--head)}
+.turn.claude{background:transparent;border-left-color:var(--rule)}
+.turn .l{font-family:Franklin,sans-serif;font-size:12px;color:var(--graphite);margin-bottom:4px}
+.turn .t p{margin:0 0 .7em}
+.turn table{border-collapse:collapse;font-size:13px;margin:8px 0;display:block;overflow-x:auto;max-width:100%}
+.turn td,.turn th{border:1px solid var(--rule);padding:3px 7px;text-align:left;vertical-align:top}
+ul.instr{padding-left:18px;max-width:80ch}
+ul.instr li{margin:0 0 8px}
+ul.checks,ul.gaps{padding-left:18px;max-width:80ch;font-size:14px}
+ul.checks li,ul.gaps li{margin:0 0 4px}
+main.page details summary{cursor:pointer;font-family:Franklin,sans-serif;font-size:13px;color:var(--graphite)}
+pre.instr{white-space:pre-wrap;word-break:break-word;font-family:Franklin,sans-serif;font-size:13px;line-height:1.5;max-width:92ch;background:var(--head);padding:14px 16px;overflow-x:auto}
+main.page code{font-family:ui-monospace,Menlo,monospace;font-size:.92em;background:var(--head);padding:0 3px}
+.before .more,.cut .lede a{font-family:Franklin,sans-serif;font-size:13px}
+@media (max-width:760px){main.page h1{font-size:26px}main.page h2{font-size:18px}.turn{padding:8px 10px}}
+/* ---- step 4 components (2026-09-14): graphite counts (CL6), play as the slider's left cap (CL7), 12 px dots (BK7), open dots
+   for arrived/replaced stops, the shared run at −1/−2 (D1), legend B + the how-to disclosure (7B, WT), the lede collapsed (CL8) */
+.open .head .hcount{color:var(--graphite)}
+.bar .wip{background:var(--graphite)}
+.slider{gap:0;margin:0 0 4px}
+.slider .play{width:44px;height:44px;flex:0 0 44px;border:1px solid var(--ink);border-right:0;background:none;color:var(--ink);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;padding:0}
+.slider .play svg{width:12px;height:12px}
+.slider .play svg *{fill:currentColor}
+.slider .play.on{background:var(--ink);color:var(--ground)}
+.slider .track{border-left:1px solid var(--ink)}
+.track .stop.x{background:var(--ground);border-width:1.5px}
+.track .stop.x.cur{background:var(--head)}
+.ptext .shared{background:var(--shade)}
+.diffnote .shared{background:var(--shade);padding:0 3px}
+.open .plede.brief{font-size:13.5px;color:var(--graphite);margin:0 0 6px}
+.disc{margin-top:16px;border-top:1px solid var(--ink);padding-top:6px;font-size:13.5px;line-height:1.5;max-width:90ch}
+.disc details{margin:6px 0}
+.disc details summary{cursor:pointer;font-family:Franklin,sans-serif;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink)}
+.disc details p{margin:6px 0 0;max-width:60ch}
+.disc .vleg{margin-top:8px}
+.disc .full{font-size:13px;color:var(--graphite);margin-top:8px;max-width:80ch}
+.margin .e.xcard{background:var(--head);border-left-color:var(--ink)}
+.masthead .disclosure{font-family:Franklin,sans-serif;font-size:12px;letter-spacing:.02em;color:var(--graphite);margin:4px 0 0}
+.margin .e.arrive,.notestrip .si.arrive{opacity:0;transform:translateY(6px)}
+.margin .e,.notestrip .si{transition:opacity .35s ease,transform .35s ease}
+@media (prefers-reduced-motion: reduce){.margin .e,.notestrip .si{transition:none}}
+/* ---- 2026-09-14 13:25, Evan: pages in the bar, the Around block, the exchange summaries, the sentence view */
+.bar .pages{display:flex;gap:18px;margin-left:22px;font-family:Franklin,sans-serif;font-size:11px;letter-spacing:.08em;text-transform:uppercase}
+.bar .pages a{color:var(--ink);text-decoration:none;border-bottom:1px solid transparent;padding:2px 0}
+.bar .pages a:hover,.bar .pages a[aria-current]{border-bottom-color:var(--ink)}
+@media (max-width:900px){.bar .pages{display:none}}
+nav.around{margin-top:48px}
+nav.around ul{list-style:none;padding:0;margin:0;max-width:70ch}
+nav.around li{margin:0 0 10px;font-size:15.5px;line-height:1.45}
+nav.around li a{font-weight:600}
+dl.sum{margin:8px 0 6px;max-width:70ch;display:grid;grid-template-columns:max-content 1fr;gap:6px 14px}
+dl.sum dt{font-family:Franklin,sans-serif;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--graphite);padding-top:3px}
+dl.sum dd{margin:0}
+@media (max-width:600px){dl.sum{grid-template-columns:1fr;gap:2px 0}dl.sum dt{margin-top:8px}}
+details.thread{margin:8px 0 0}
+details.thread>summary{cursor:pointer;font-family:Franklin,sans-serif;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink);margin-bottom:6px}
+.ptext [data-si]{cursor:pointer}
+.ptext [data-si]:hover{text-decoration:underline;text-decoration-color:var(--graphite);text-underline-offset:4px;text-decoration-thickness:1px}
+.open.sent .ptext{font-size:1.06em}
+.open.sent .ptext{cursor:pointer}
+.margin .e.wording{background:none;border-left-color:var(--rule);cursor:pointer}
+.margin .e.wording.cur{background:var(--head);border-left-color:var(--ink)}
+.margin .e.wording .t{font-size:14px}
+.state a.leave{font-family:Franklin,sans-serif;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink);margin-left:10px}
+.para .untr{font-family:Franklin,sans-serif;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--graphite)}
+/* ---- 2026-09-14 14:39, Evan's Air read */
+.ptext .hov{background:var(--head);box-shadow:0 0 0 2px var(--head)}
+.open.sent .head{border-bottom:2px solid var(--ink);padding-bottom:6px}
+.open.sent .head .pn{color:var(--ink);font-weight:600}
+.margin .e.birth .stood .lab,.notestrip .si.birth .stood .lab{font-style:normal;font-family:Franklin,sans-serif;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--graphite);margin-right:4px}
+.margin .e.birth details.was{margin-top:6px}
+.margin .e.birth details.was summary,.notestrip .si.birth details.was summary{cursor:pointer;font-size:12.5px;text-decoration:underline;text-underline-offset:3px}
+.margin .e.birth details.was .b{white-space:normal;margin-top:4px}
+main.page .cutpara{margin:0 0 22px;max-width:74ch}
+main.page .cutpara h4{font-size:16px;margin:14px 0 2px}
+main.page .cutpara h4 a{font-family:Franklin,sans-serif;font-size:11px;letter-spacing:.08em;text-transform:uppercase;font-weight:400;margin-left:8px}
+main.page .cutpara .summ{font-family:Franklin,sans-serif;font-size:12.5px;color:var(--graphite);margin:0 0 8px}
+main.page h3.secname{margin-top:34px;border-top:1px solid var(--rule);padding-top:10px}
+main.page .cand{margin:0 0 26px;max-width:74ch}
+main.page .cand h3{font-family:Schola,serif;font-size:17px;letter-spacing:0;text-transform:none;color:var(--ink);margin:0 0 4px}
+/* ---- 2026-09-14 15:10: Before the essay, visual */
+ol.evening{list-style:none;padding:0;margin:10px 0 8px;display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:0;border-top:2px solid var(--ink);max-width:100%}
+ol.evening li{padding:10px 10px 0 0;position:relative;font-size:13.5px;line-height:1.35}
+ol.evening li::before{content:'';position:absolute;top:-7px;left:0;width:10px;height:10px;border-radius:50%;background:var(--ground);border:2px solid var(--ink)}
+ol.evening li.doc::before{background:var(--ink)}
+ol.evening li.key::before{background:var(--yellow)}
+ol.evening .tm{display:block;font-family:Franklin,sans-serif;font-variant-numeric:tabular-nums;font-size:12px;font-weight:600;margin:4px 0 2px}
+@media (max-width:760px){ol.evening{grid-template-columns:1fr;border-top:0;border-left:2px solid var(--ink);margin-left:6px}ol.evening li{padding:0 0 12px 16px}ol.evening li::before{top:3px;left:-7px}ol.evening .tm{margin-top:0}}
+.docpair{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;max-width:900px}
+.doccard{background:var(--head);border-left:3px solid var(--ink);padding:12px 16px}
+.doccard h3{font-family:Schola,serif;font-size:19px;letter-spacing:0;text-transform:none;color:var(--ink);margin:0 0 2px}
+.doccard .when{font-family:Franklin,sans-serif;font-size:12px;color:var(--graphite);margin:0 0 6px}
+.doccard p{margin:0 0 6px}
+.doccard .go a{font-family:Franklin,sans-serif;font-size:11px;letter-spacing:.08em;text-transform:uppercase;margin-right:14px}
+.candgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;max-width:1000px}
+@media (max-width:760px){.docpair,.candgrid{grid-template-columns:1fr}}
+main.page .candgrid .cand{margin:0;padding:12px 14px;border:1px solid var(--rule);background:var(--ground)}
+main.page .candgrid .cand h3{display:flex;gap:8px;align-items:baseline;font-size:17px;margin:0 0 6px}
+main.page .candgrid .cand .no{font-family:Franklin,sans-serif;font-size:11px;color:var(--graphite);min-width:1.4em}
+main.page .candgrid .cand p{margin:0 0 7px;font-size:14.5px;line-height:1.4}
+main.page .candgrid .cand .idea{font-size:16px;font-style:italic}
+main.page .candgrid .cand .lab{display:block;font-family:Franklin,sans-serif;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--graphite);margin-bottom:1px}
+main.page .candgrid .cand .carried{border-top:1px solid var(--rule);padding-top:7px;margin-bottom:0}
+details.docfull{margin:8px 0;max-width:74ch}
+details.docfull>summary{cursor:pointer;font-family:Franklin,sans-serif;font-size:12px;letter-spacing:.08em;text-transform:uppercase}
+details.docfull .doc{margin-top:10px}
+/* ---- 2026-09-14 15:41: the markup stop and the documents as sequences */
+.ptext .inote{font-family:Franklin,sans-serif;font-size:.72em;line-height:1.2;color:var(--ink);background:var(--ground);border:1px solid var(--ink);border-radius:3px;padding:1px 5px;margin:0 2px;vertical-align:.12em;white-space:normal}
+.ptext .inote::before{content:'note · ';color:var(--graphite);letter-spacing:.04em}
+
+.diffnote details.chg{margin-top:6px}
+.diffnote details.chg summary{cursor:pointer;color:var(--graphite)}
+.diffnote .chgrow{margin:8px 0 0 0;font-size:.92em;line-height:1.45}
+.diffnote .chgrow b{font-weight:600;text-transform:none}
+.diffnote .chgrow .chgt{margin-top:2px}
+.open.nohand .hw{text-decoration:none}

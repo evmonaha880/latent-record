@@ -1,0 +1,387 @@
+{
+ "fonts": {
+  "css": "@font-face{font-family:\"Schola\";font-weight:400;font-style:normal;font-display:swap;src:url(fonts/schola-regular.woff2) format(\"woff2\")}\n@font-face{font-family:\"Schola\";font-weight:400;font-style:italic;font-display:swap;src:url(fonts/schola-italic.woff2) format(\"woff2\")}\n@font-face{font-family:\"Schola\";font-weight:700;font-style:normal;font-display:swap;src:url(fonts/schola-bold.woff2) format(\"woff2\")}\n@font-face{font-family:\"Schola\";font-weight:700;font-style:italic;font-display:swap;src:url(fonts/schola-bolditalic.woff2) format(\"woff2\")}\n@font-face{font-family:\"Charter Adjusted\";font-weight:400;font-style:normal;font-display:swap;size-adjust:96.9%;src:url(fonts/charter-roman.woff2) format(\"woff2\")}\n@font-face{font-family:\"Charter Adjusted\";font-weight:400;font-style:italic;font-display:swap;size-adjust:95.9%;src:url(fonts/charter-italic.woff2) format(\"woff2\")}\n@font-face{font-family:\"Charter Adjusted\";font-weight:700;font-style:normal;font-display:swap;size-adjust:95.7%;src:url(fonts/charter-bold.woff2) format(\"woff2\")}\n@font-face{font-family:\"Franklin\";font-weight:400;font-style:normal;font-display:swap;src:url(fonts/franklin-400.woff2) format(\"woff2\")}\n@font-face{font-family:\"Franklin\";font-weight:500;font-style:normal;font-display:swap;src:url(fonts/franklin-500.woff2) format(\"woff2\")}\n@font-face{font-family:\"Franklin\";font-weight:600;font-style:normal;font-display:swap;src:url(fonts/franklin-600.woff2) format(\"woff2\")}",
+  "manifest": {
+   "schola-regular.woff2": 24852,
+   "schola-italic.woff2": 27508,
+   "schola-bold.woff2": 25816,
+   "schola-bolditalic.woff2": 27692,
+   "charter-roman.woff2": 20068,
+   "charter-roman.woff2.size-adjust": 0.9689,
+   "charter-italic.woff2": 22092,
+   "charter-italic.woff2.size-adjust": 0.9592,
+   "charter-bold.woff2": 19740,
+   "charter-bold.woff2.size-adjust": 0.9572,
+   "franklin-400.woff2": 12296,
+   "franklin-400.woff2.tnum_advance": 688,
+   "franklin-500.woff2": 12336,
+   "franklin-500.woff2.tnum_advance": 694,
+   "franklin-600.woff2": 12276,
+   "franklin-600.woff2.tnum_advance": 701,
+   "schola_x_height": 0.466
+  },
+  "chars": 205
+ },
+ "photos": [
+  {
+   "after": 0,
+   "n": "00",
+   "caption": "",
+   "jpg": "img/00.jpg",
+   "small": "img/phone/00.jpg",
+   "w": 1183,
+   "h": 1600,
+   "pw": 720,
+   "ph": 974,
+   "bytes": 276616,
+   "pbytes": 100208,
+   "source": "00 Cover.jpg",
+   "source_px": [
+    1331,
+    1800
+   ]
+  },
+  {
+   "after": 2,
+   "n": "01",
+   "caption": "THE KODAK 'K' MARK, INTRODUCED 1971. (PUBLIC DOMAIN; KODAK TRADEMARK)",
+   "jpg": "img/01.jpg",
+   "small": "img/phone/01.jpg",
+   "w": 1600,
+   "h": 1456,
+   "pw": 720,
+   "ph": 655,
+   "bytes": 54861,
+   "pbytes": 19140,
+   "source": "01 Kodak K mark 1971.jpg",
+   "source_px": [
+    1800,
+    1638
+   ]
+  },
+  {
+   "after": 6,
+   "n": "02",
+   "caption": "'YOU PRESS THE BUTTON, WE DO THE REST' — KODAK CAMERA ADVERTISEMENT, C. 1889. (PUBLIC DOMAIN)",
+   "jpg": "img/02.jpg",
+   "small": "img/phone/02.jpg",
+   "w": 1600,
+   "h": 1041,
+   "pw": 720,
+   "ph": 468,
+   "bytes": 169701,
+   "pbytes": 47073,
+   "source": "02 You press the button ad 1889.jpg",
+   "source_px": [
+    1800,
+    1171
+   ]
+  },
+  {
+   "after": 7,
+   "n": "03",
+   "caption": "A KODAK BOX BROWNIE — THE ONE-DOLLAR CAMERA LINE LAUNCHED IN 1900. PHOTO: COGDOGBLOG, CC0.",
+   "jpg": "img/03.jpg",
+   "small": "img/phone/03.jpg",
+   "w": 1600,
+   "h": 1067,
+   "pw": 720,
+   "ph": 480,
+   "bytes": 232880,
+   "pbytes": 48739,
+   "source": "03 Kodak Box Brownie.jpg",
+   "source_px": [
+    1800,
+    1200
+   ]
+  },
+  {
+   "after": 8,
+   "n": "04",
+   "caption": "KODAK TOWER, ROCHESTER — EASTMAN'S HEADQUARTERS SINCE 1914.",
+   "jpg": "img/04.jpg",
+   "small": "img/phone/04.jpg",
+   "w": 1200,
+   "h": 1554,
+   "pw": 720,
+   "ph": 932,
+   "bytes": 179860,
+   "pbytes": 79398,
+   "source": "04 Kodak Tower.jpg",
+   "source_px": [
+    1200,
+    1554
+   ]
+  },
+  {
+   "after": 9,
+   "n": "05",
+   "caption": "KODAK PARK, ROCHESTER, N.Y., C. 1900-1910. DETROIT PUBLISHING CO., LIBRARY OF CONGRESS. (PUBLIC DOMAIN)",
+   "jpg": "img/05.jpg",
+   "small": "img/phone/05.jpg",
+   "w": 1600,
+   "h": 1260,
+   "pw": 720,
+   "ph": 567,
+   "bytes": 237610,
+   "pbytes": 50482,
+   "source": "05 Kodak Park c1900.jpg",
+   "source_px": [
+    1800,
+    1418
+   ]
+  },
+  {
+   "after": 10,
+   "n": "06",
+   "caption": "THE TRINITY FIREBALL 16 MILLISECONDS AFTER DETONATION, 16 JULY 1945. PHOTO: BERLYN BRIXNER, LOS ALAMOS NATIONAL LABORATORY. (PUBLIC DOMAIN)",
+   "jpg": "img/06.jpg",
+   "small": "img/phone/06.jpg",
+   "w": 1600,
+   "h": 1078,
+   "pw": 720,
+   "ph": 485,
+   "bytes": 88448,
+   "pbytes": 20925,
+   "source": "06 Trinity fireball 1945.jpg",
+   "source_px": [
+    1800,
+    1213
+   ]
+  },
+  {
+   "after": 10,
+   "n": "07",
+   "caption": "EARTHRISE, PHOTOGRAPHED BY BILL ANDERS ABOARD APOLLO 8, DECEMBER 24, 1968. NASA AS08-14-2383. (PUBLIC DOMAIN)",
+   "jpg": "img/07.jpg",
+   "small": "img/phone/07.jpg",
+   "w": 1596,
+   "h": 1600,
+   "pw": 720,
+   "ph": 722,
+   "bytes": 96869,
+   "pbytes": 21964,
+   "source": "07 Earthrise 1968.jpg",
+   "source_px": [
+    1796,
+    1800
+   ]
+  },
+  {
+   "after": 13,
+   "n": "08",
+   "caption": "EASTMAN AND EDISON AT THE KODACOLOR DEMONSTRATION, EASTMAN'S ROCHESTER HOME, JULY 1928. NATIONAL PARK SERVICE / NPGALLERY. (PUBLIC DOMAIN)",
+   "jpg": "img/08.jpg",
+   "small": "img/phone/08.jpg",
+   "w": 1600,
+   "h": 1317,
+   "pw": 720,
+   "ph": 593,
+   "bytes": 314466,
+   "pbytes": 67211,
+   "source": "08 Eastman and Edison 1928.jpg",
+   "source_px": [
+    1800,
+    1482
+   ]
+  },
+  {
+   "after": 25,
+   "n": "09",
+   "caption": "THE GEORGE EASTMAN HOUSE ON EAST AVENUE, ROCHESTER — NOW THE GEORGE EASTMAN MUSEUM. PHOTO: CAROL M. HIGHSMITH. (PUBLIC DOMAIN)",
+   "jpg": "img/09.jpg",
+   "small": "img/phone/09.jpg",
+   "w": 1600,
+   "h": 1200,
+   "pw": 720,
+   "ph": 540,
+   "bytes": 392262,
+   "pbytes": 81107,
+   "source": "09 George Eastman House.jpg",
+   "source_px": [
+    1800,
+    1350
+   ]
+  },
+  {
+   "after": 30,
+   "n": "10",
+   "caption": "THE NOTE, MARCH 14, 1932: “TO MY FRIENDS: MY WORK IS DONE. WHY WAIT? — GE.” (GEORGE EASTMAN MUSEUM)",
+   "jpg": "img/10.jpg",
+   "small": "img/phone/10.jpg",
+   "w": 1600,
+   "h": 1114,
+   "pw": 720,
+   "ph": 501,
+   "bytes": 96563,
+   "pbytes": 26571,
+   "source": "10 The note 1932.jpg",
+   "source_px": [
+    1600,
+    1114
+   ]
+  },
+  {
+   "after": 34,
+   "n": "11",
+   "caption": "U-2 RECONNAISSANCE PHOTOGRAPH OF THE SAN CRISTÓBAL MRBM SITE, CUBA, 14 OCTOBER 1962 - THE FRAME THAT OPENED THE CUBAN MISSILE CRISIS. (U.S. NATIONAL ARCHIVES, PUBLIC DOMAIN)",
+   "jpg": "img/11.jpg",
+   "small": "img/phone/11.jpg",
+   "w": 1600,
+   "h": 1350,
+   "pw": 720,
+   "ph": 608,
+   "bytes": 499959,
+   "pbytes": 120439,
+   "source": "11 U-2 San Cristobal 1962.jpg",
+   "source_px": [
+    1800,
+    1519
+   ]
+  },
+  {
+   "after": 34,
+   "n": "12",
+   "caption": "A C-119 OF THE 6593D TEST SQUADRON SNAGS THE DISCOVERER 14 FILM CAPSULE IN MIDAIR OVER THE PACIFIC, AUGUST 19, 1960. U.S. AIR FORCE PHOTO. (PUBLIC DOMAIN)",
+   "jpg": "img/12.jpg",
+   "small": "img/phone/12.jpg",
+   "w": 1600,
+   "h": 1290,
+   "pw": 720,
+   "ph": 580,
+   "bytes": 234536,
+   "pbytes": 65033,
+   "source": "12 Discoverer 14 capsule catch 1960.jpg",
+   "source_px": [
+    1800,
+    1451
+   ]
+  },
+  {
+   "after": 35,
+   "n": "13",
+   "caption": "LUNAR ORBITER 1'S FIRST VIEW OF EARTH FROM THE MOON, AUGUST 23, 1966 — TRANSMITTED ON KODAK-PROCESSED FILM. NASA. (PUBLIC DOMAIN)",
+   "jpg": "img/13.jpg",
+   "small": "img/phone/13.jpg",
+   "w": 1600,
+   "h": 635,
+   "pw": 720,
+   "ph": 286,
+   "bytes": 143361,
+   "pbytes": 34688,
+   "source": "13 Lunar Orbiter 1 earth 1966.jpg",
+   "source_px": [
+    1800,
+    714
+   ]
+  },
+  {
+   "after": 37,
+   "n": "14",
+   "caption": "STEVEN SASSON’S 1975 PROTOTYPE: LENS, CCD, AND A CASSETTE DECK. PHOTO: EASTMAN KODAK, VIA THE NEW YORK TIMES.",
+   "jpg": "img/14.jpg",
+   "small": "img/phone/14.jpg",
+   "w": 1363,
+   "h": 1600,
+   "pw": 720,
+   "ph": 845,
+   "bytes": 258527,
+   "pbytes": 77049,
+   "source": "14 Sasson prototype 1975.jpg",
+   "source_px": [
+    1533,
+    1800
+   ]
+  },
+  {
+   "after": 46,
+   "n": "15",
+   "caption": "THE POLAROID SX-70 LAND CAMERA (1972). PHOTO: THOMAS BACKA, CC0.",
+   "jpg": "img/15.jpg",
+   "small": "img/phone/15.jpg",
+   "w": 1600,
+   "h": 1518,
+   "pw": 720,
+   "ph": 683,
+   "bytes": 154044,
+   "pbytes": 40457,
+   "source": "15 Polaroid SX-70.jpg",
+   "source_px": [
+    1800,
+    1708
+   ]
+  },
+  {
+   "after": 54,
+   "n": "16",
+   "caption": "THE STRUCTURE OF FILM: A GELATIN EMULSION HOLDING SILVER-HALIDE CRYSTALS, COATED ON THE BASE.",
+   "jpg": "img/16.jpg",
+   "small": "img/phone/16.jpg",
+   "w": 1400,
+   "h": 934,
+   "pw": 720,
+   "ph": 480,
+   "bytes": 74860,
+   "pbytes": 30162,
+   "source": "16 Structure of film.jpg",
+   "source_px": [
+    1400,
+    934
+   ]
+  },
+  {
+   "after": 54,
+   "n": "17",
+   "caption": "HOW LIGHT WRITES: THE GURNEY–MOTT MECHANISM OF LATENT-IMAGE FORMATION. (FAUBER, RADIOGRAPHIC IMAGING & EXPOSURE)",
+   "jpg": "img/17.jpg",
+   "small": "img/phone/17.jpg",
+   "w": 650,
+   "h": 579,
+   "pw": 650,
+   "ph": 579,
+   "bytes": 50714,
+   "pbytes": 48414,
+   "source": "17 Gurney-Mott mechanism.jpg",
+   "source_px": [
+    650,
+    579
+   ]
+  },
+  {
+   "after": 54,
+   "n": "18",
+   "caption": "OUT OF THE MATHEMATICAL DARK: A DIFFUSION MODEL RESOLVES AN IMAGE FROM PURE NOISE, STEPS 1–40. (BENLISQUARE, CC BY-SA 4.0)",
+   "jpg": "img/18.jpg",
+   "small": "img/phone/18.jpg",
+   "w": 1600,
+   "h": 1083,
+   "pw": 720,
+   "ph": 487,
+   "bytes": 270581,
+   "pbytes": 67093,
+   "source": "18 Diffusion model steps.jpg",
+   "source_px": [
+    2000,
+    1354
+   ]
+  },
+  {
+   "after": 57,
+   "n": "19",
+   "caption": "THE GEORGE EASTMAN MEMORIAL IN MIT'S BUILDING 6 CORRIDOR. PHOTO: MADCOVERBOY, WIKIMEDIA COMMONS, CC BY-SA 3.0.",
+   "jpg": "img/19.jpg",
+   "small": "img/phone/19.jpg",
+   "w": 1063,
+   "h": 1600,
+   "pw": 720,
+   "ph": 1084,
+   "bytes": 322369,
+   "pbytes": 149781,
+   "source": "19 Eastman memorial MIT.jpg",
+   "source_px": [
+    1196,
+    1800
+   ]
+  }
+ ]
+}
