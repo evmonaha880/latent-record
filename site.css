@@ -450,3 +450,5 @@ main.page h2#who,main.page h2#weeks,main.page h2#dots,main.page h2#checked,main.
 .ptext .inote[data-pair]{cursor:pointer}
 .ptext .inote.pair-hot{outline:2px solid var(--yellow);outline-offset:1px}
 .margin .e.pair-hot,.notestrip .si.pair-hot{box-shadow:inset 3px 0 0 var(--yellow)}
+
+.state .rw{font-weight:600;color:var(--ink)}

@@ -96,6 +96,29 @@ const isDraft = s => s.kind === 'draft' || s.kind === 'absent' || s.kind === 'ma
 function draftNo(i){ if (!cur || i < 0) return null; let n = -1; for (let j = 0; j <= i; j++) if (isDraft(cur.stops[j])) n++; return isDraft(cur.stops[i]) ? n : null; }
 const firstDraftIdx = () => { for (let j = 0; j < cur.stops.length; j++) if (isDraft(cur.stops[j]) && !cur.stops[j].absent) return j; return cur.stops.length - 1; };
 
+// what an author's-edits stop shows, said only when it is there (09/24): notes, struck and shaded words, or punctuation alone
+function markupLine(nNotes, ins, del, s, carry){
+  const bits = [];
+  if (ins + del) bits.push(`<span class="del">struck</span> is what he took out, <span class="ins">shaded</span> what he typed`);
+  if (nNotes) bits.push(`his ${nNotes === 1 ? 'note stands' : 'notes stand'} where he typed ${nNotes === 1 ? 'it' : 'them'}${carry ? `, and the next save after a Claude write carries ${nNotes === 1 ? 'it' : 'them'} out` : ''}`);
+  if (!bits.length) bits.push(s && s.n_polish ? 'only punctuation changed in this paragraph' : 'no words in this paragraph changed at this stop');
+  const t = bits.join('; ') + '.'; return carry ? t : t.charAt(0).toUpperCase() + t.slice(1);
+}
+function tidyDiff(parts){   // 09/24, fix D: the old words of a changed stretch struck together, then the new; never interleaved
+  const P = parts.map(p => ({k: p.k, w: p.w}));
+  for (let a = 0; a < P.length; ){ if (P[a].k !== 'eq'){ a++; continue; } let b = a; while (b < P.length && P[b].k === 'eq') b++;
+    // fewer than three kept words between two changes belong to the change: shown struck and shaded, never counted as changed
+    if (a > 0 && b < P.length && b - a < 3) for (let j = a; j < b; j++) P[j].k = 'mid'; a = b; }
+  const out = [];
+  for (let a = 0; a < P.length; ){ if (P[a].k === 'eq'){ out.push(P[a]); a++; continue; } let b = a; while (b < P.length && P[b].k !== 'eq') b++;
+    const seg = P.slice(a, b);
+    if (seg.some(p => p.k === 'del') && seg.some(p => p.k === 'ins')){
+      seg.filter(p => p.k !== 'ins').forEach(p => out.push({k: 'del', w: p.w, soft: p.k === 'mid'}));
+      seg.filter(p => p.k !== 'del').forEach(p => out.push({k: 'ins', w: p.w, soft: p.k === 'mid'}));
+    } else seg.forEach(p => out.push(p.k === 'mid' ? {k: 'eq', w: p.w} : p));
+    a = b; }
+  return out;
+}
 function diffWords(a, b){
   // a word he struck is the same word, drawn struck; a comma or a capital is not a changed word (the polish fold, ruled 09/14 09:49)
   const key = w => String(w.w).replace(/~~/g, '').replace(/[^\p{L}\p{N}]+/gu, '').toLowerCase();
@@ -432,9 +455,17 @@ function render(animate){
   // no diff across a replaced stop (the dead paragraph is not a draft of this one) nor from an absent stop; arrived → first draft diffs
   // one rule for every stop (09/14 15:41): diff against the stop before, the plan and the outline included; not across a
   // replaced stop, an absent one, or a jump to a different passage; the first text ever is all new
-  const noDiff = !prev || afterAbsent || absent || prev.kind === 'replaced' || s.kind === 'replaced' || (isPre && s.jump);
-  const allNew = s.kind !== 'replaced' && !absent && !(isPre && s.jump) && (!prev || afterAbsent || prev.kind === 'replaced');
-  const parts = !noDiff ? diffWords(prev.words, s.words) : s.words.map(w => ({k: allNew ? 'ins' : 'eq', w}));
+  // before the essay the plan and the outline are two files: a stop is compared only with the last stop of its own document (09/24, fix B)
+  let cmp = prev, docStart = false;
+  if (isPre){ let j = idx - 1; while (j >= -off && !(stopAt(j).pre && stopAt(j).name === s.name)) j--; cmp = j >= -off ? stopAt(j) : null; docStart = !cmp; }
+  const cmpAbsent = !!(cmp && cmp.absent);
+  const noDiff = !cmp || cmpAbsent || absent || cmp.kind === 'replaced' || s.kind === 'replaced' || (isPre && s.jump);
+  const allNew = s.kind !== 'replaced' && !absent && !(isPre && s.jump) && (!cmp || cmpAbsent || cmp.kind === 'replaced');
+  const raw0 = !noDiff ? diffWords(cmp.words, s.words) : s.words.map(w => ({k: allNew ? 'ins' : 'eq', w}));
+  // a rewrite reads as the old text struck whole, then the new (09/24, fix D); most words new = the stop is labelled rewritten (fix A)
+  const nEq = raw0.filter(p => p.k === 'eq').length, nOld = noDiff ? 0 : cmp.words.length;
+  const rewritten = !noDiff && nOld > 6 && s.words.length > 6 && nEq / Math.max(nOld, s.words.length) < 0.5;
+  const parts = noDiff ? raw0 : tidyDiff(raw0);
   const runs = isPre ? (s.shared_runs || []) : []; const inRun = wi => runs.some(([a, b]) => wi >= a && wi < b);
   const SI = (!isPre && !cur.sent && isFinal) ? sentenceMap(s) : null;      // word → sentence, for the tap (published draft only; Evan 09/14 14:39)
   let html = '', ins = 0, del = 0, hs = false, wi = -1;
@@ -463,22 +494,23 @@ function render(animate){
     if (struck) cls.push('hs'); if (hsEnd) hs = false;
     // a struck word is a deletion Claude carried out, never a word the author wrote (Evan, 09/10 11:35)
     if (p.w.hand && p.k !== 'del' && !struck) cls.push('hw');
-    if (p.k === 'ins'){ cls.push('ins'); ins++; if (animate && !reduced()) cls.push('dev'); }
-    if (p.k === 'del'){ cls.push('del'); del++; }
+    if (p.k === 'ins'){ cls.push('ins'); if (!p.soft) ins++; if (animate && !reduced()) cls.push('dev'); }
+    if (p.k === 'del'){ cls.push('del'); if (!p.soft) del++; }
     if (isPre && inRun(wi)) cls.push('shared');            // the run this paragraph took from the outline or the plan (D1, BK9)
     const si = (SI && p.k !== 'del') ? SI[wi] : null;
+    if (/^[.,;:!?…)\]”’"']+$/.test(raw)) html = html.replace(/ $/, '');     // punctuation sticks to the word before it (09/24, fix E)
     html += (cls.length || si != null ? `<span class="${cls.join(' ')}"${si != null ? ` data-si="${si}"` : ''}>${t}</span>` : t) + ' ';
     if (p.k !== 'del') inl.filter(x => x.at === wi).forEach(x => { html += noteSpan(x); });     // his notes where he typed them
   });
   el.innerHTML = html;
   if (animate && !reduced()) requestAnimationFrame(() => requestAnimationFrame(() => $$('.ins.dev', el).forEach(e => e.classList.remove('dev'))));
-  const n = s.words.length, N = D.drafts != null ? D.drafts : stops.filter(isDraft).length - 1, dn = draftNo(idx);
+  const n = s.words.filter(w => /[A-Za-z0-9]/.test(w.w)).length, N = D.drafts != null ? D.drafts : stops.filter(isDraft).length - 1, dn = draftNo(idx);
   const HL = false;
   const who = s.machine ? ' · saved after a Claude write' : '';          // no author word on any other save (CL3)
   const state = $('.state', sec);
   const isArrived = s.kind === 'arrived', isReplaced = s.kind === 'replaced';
   state.innerHTML = isPre
-    ? `Before the essay <span class="tally">· ${esc(s.name)} · ${s.phase === 'markup' ? 'the author’s notes and edits' : 'Claude writes'} · ${span(s)}${absent ? ` · not in ${esc(s.name)} yet` : ''}</span>`
+    ? `Before the essay <span class="tally">· ${esc(s.name)} · ${s.phase === 'markup' ? 'the author’s notes and edits' : 'Claude writes'} · ${prev && prev.iso && s.iso_from && s.iso_from < prev.iso ? `${fmt(s.iso)}, the end of a run begun at ${fmt(s.iso_from).split(', ')[1]}` : span(s)}${absent ? ` · not in ${esc(s.name)} yet` : ''}</span>`
     : isArrived
     ? `${s.label === 'from the chat' ? 'Arrived from the chat' : 'Arrived as a note'} <span class="tally">· ${fmt(s.iso)} · ${n} words</span>`
     : isReplaced
@@ -490,6 +522,7 @@ function render(animate){
     : isFinal
     ? `<span class="sc" style="font-weight:600">As published</span> <span class="tally">· draft ${N} of ${N} · ${fmt(s.iso)}${who} · ${n} words</span>`
     : `Draft ${dn} of ${N} <span class="tally">· ${fmt(s.iso)}${who} · ${n === 0 ? 'no text yet, only the note' : `${n} words`}</span>`;
+  if (rewritten){ const tl = $('.tally', state); if (tl) tl.insertAdjacentHTML('beforeend', ' · <b class="rw">rewritten</b>'); }
   const noteHere = D.notes.some(nt => wDraftOf(nt, stops) === idx);
   const nearest = (() => { if (cur.citeState == null) return -1; let i = 0; stops.forEach((z, j) => { if (z.state <= cur.citeState) i = j; }); return i; })();
   const citeNote = (cur.citeState != null && s.state !== cur.citeState && idx === nearest)
@@ -497,15 +530,17 @@ function render(animate){
     : (cur.citeMiss != null && idx === 0)
     ? ` <span style="color:var(--graphite)">(You asked for ${cur.citeMiss === -2 ? 'the plan' : 'the outline'}; this paragraph had nothing there, so this is draft 0.)</span>` : '';
   const fd = firstDraftIdx();
-  $('.diffnote', sec).innerHTML = (isPre ? (absent ? `Not in ${esc(s.name)} yet.`
+  const rwLine = rewritten ? '<b>Rewritten.</b> Most of the words are new at this stop: the old text is <span class="del">struck</span> in full, the new text <span class="ins">shaded</span> after it. ' : '';
+  $('.diffnote', sec).innerHTML = rwLine + (isPre ? (absent ? `Not in ${esc(s.name)} yet.`
       : (s.jump ? `A different passage of ${esc(s.name)}: the one the author’s note stood on. ` : '')
-        + (s.phase === 'markup' ? `His notes stand where he typed them${ins + del ? `; <span class="del">struck</span> is what he took out, <span class="ins">shaded</span> what he typed` : ''}.`
+        + (docStart ? `${esc(s.name).replace(/^./, c => c.toUpperCase())} begins here. ` : '')
+        + (s.phase === 'markup' ? markupLine(inl.length, ins, del, s)
            : (ins + del && !noDiff ? `Claude’s write: ${[ins ? '<span class="ins">shaded</span> is new' : '', del ? '<span class="del">struck</span> is taken out' : ''].filter(Boolean).join(', ')}.` : allNew ? `Claude’s write; <span class="ins">shaded</span>: all of it is new.` : `Claude’s write.`))
         + (s.fallback ? ` The passage as it stood when he wrote the note.` : '')
         + (s.ancestor ? ` This paragraph’s own words come from another line of ${esc(s.name)}: “${esc(pretty(plain(s.ancestor)))}”` : ''))
     : isReplaced ? `The paragraph that stood here before this one${s.why ? `. ${esc(register(s.why))}` : ''}`
     : isArrived ? (s.label === 'from the chat' ? `The words as they reached the file from the chat, wrapped as a note; the first draft in the essay’s own text is draft 1, ${fmt(stops[fd].iso)}.` : `The words as the author first typed them into the file, as a note; the first draft in the essay’s own text is draft 1, ${fmt(stops[fd].iso)}.`)
-    : s.kind === 'markup' ? `The author’s edits${s.saves > 1 ? `, ${s.saves} saves` : ''}: ${ins + del ? `<span class="del">struck</span> is what he took out, <span class="ins">shaded</span> what he typed; ` : ''}his notes stand where he typed them, and the next save after a Claude write carries them out.`
+    : s.kind === 'markup' ? `The author’s edits${s.saves > 1 ? `, ${s.saves} saves` : ''}: ` + markupLine(inl.length, ins, del, s, true)
     : absent ? `<em>Not yet written.</em> The first save did not have this paragraph; ${stops.slice(1, fd).length ? 'what stood before it is on the stops to the right; ' : ''}its first draft is ${fmt(stops[fd].iso)}.${D.notes.some(nt => noteState(nt, s).open) ? ' The notes beside it were written before that first draft.' : ''}`
     : zero ? (s.carried ? `The essay’s first save, carrying this passage over from ${prev && prev.pre ? esc(prev.name) : 'the outline'}${ins + del ? `; <span class="ins">shaded</span> is new, <span class="del">struck</span> is taken out` : ''}.` : 'The first save of the essay. Nothing to compare.')
     : noDiff ? '<span class="ins">Shaded</span>: all of it is new, the first text this paragraph had in the essay.'
@@ -567,7 +602,7 @@ function render(animate){
     const h = `<div class="e quiet" id="art${j}"><div class="l">Artifact <span>· ${esc(a.kind)}</span></div><div class="t"><strong>${esc(register(a.name))}</strong>${a.did ? ' · ' + esc(register(a.did)) : ''}</div>${a.evan ? `<div class="b">${esc(register(a.evan))}</div>` : ''}</div>`;
     entries.push({rank: 3, html: h}); strip.push(`<div class="si" data-k="a${j}" role="button" tabindex="0" aria-expanded="false"><b>Artifact</b><span class="short">${esc(register(a.name))}</span><div class="more" hidden><div class="t">${esc(a.kind)}${a.did ? ' · ' + esc(register(a.did)) : ''}</div>${a.evan ? `<div class="b">${esc(register(a.evan))}</div>` : ''}</div></div>`); });
   (isPre ? [] : D.cuts).forEach((c, j) => { let at = stops.findIndex(z => c.died != null && z.state >= c.died); if (c.died == null) at = stops.length - 1; if (at !== idx) return;
-    const h = `<div class="e quiet" id="cut${j}"><div class="l">Cut <span>· ${c.died != null ? `at save ${c.died}` : `last seen at save ${c.last_alive}; the save that cut it is not recorded`}${c.cut_true ? ' · true, and cut anyway' : ''}</span></div><div class="t"><strong>${esc(register(c.name))}</strong>${c.reason ? ' · ' + esc(register(c.reason)) : ''}</div></div>`;
+    const h = `<div class="e quiet" id="cut${j}"><div class="l">Cut <span>· ${c.died != null ? `at save ${c.died}` : (c.last_alive != null ? `last seen at save ${c.last_alive}; ` : '') + 'the save that cut it is not recorded'}${c.cut_true ? ' · true, and cut anyway' : ''}</span></div><div class="t"><strong>${esc(register(c.name))}</strong>${c.reason ? ' · ' + esc(register(c.reason)) : ''}</div></div>`;
     entries.push({rank: 3, html: h}); strip.push(`<div class="si" data-k="x${j}" role="button" tabindex="0" aria-expanded="false"><b>Cut</b><span class="short">${esc(register(c.name))}</span><div class="more" hidden><div class="t">${c.reason ? esc(register(c.reason)) : 'at save ' + c.died}</div></div></div>`); });
   // Order (Evan, 2026-09-14 13:13): the newest note on top; a note taken up stays a card and slides down as newer notes
   // arrive above it. Notes first by their written save, newest first; then the exchange card, chat lines, artifacts, cuts.
