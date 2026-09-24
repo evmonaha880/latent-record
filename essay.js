@@ -4,6 +4,21 @@
 const LR = window.LR;                       // {base, passes:[{pass,end}], state_iso:[...], n_states}
 const $ = (s, el) => (el || document).querySelector(s);
 const $$ = (s, el) => Array.from((el || document).querySelectorAll(s));
+// the number a note drawn in the text shares with its card (09/23)
+const PN = ['', '\u2460', '\u2461', '\u2462', '\u2463', '\u2464', '\u2465', '\u2466', '\u2467', '\u2468'];
+const pnMark = n => `<span class="pn" aria-hidden="true">${PN[n] || n}</span>`;
+function pairBind(sec){   // hover or focus either one lights both; a tap on the note in the text brings its card into view
+  if (sec.dataset.pairBound) return; sec.dataset.pairBound = '1';
+  const hot = (n, on) => $$(`[data-pair="${n}"]`, sec).forEach(el => el.classList.toggle('pair-hot', on));
+  const at = e => e.target.closest && e.target.closest('[data-pair]');
+  sec.addEventListener('mouseover', e => { const el = at(e); if (el) hot(el.dataset.pair, true); });
+  sec.addEventListener('mouseout', e => { const el = at(e); if (el && !el.contains(e.relatedTarget)) hot(el.dataset.pair, false); });
+  sec.addEventListener('focusin', e => { const el = at(e); if (el) hot(el.dataset.pair, true); });
+  sec.addEventListener('focusout', e => { const el = at(e); if (el) hot(el.dataset.pair, false); });
+  sec.addEventListener('click', e => { const el = e.target.closest && e.target.closest('.inote[data-pair]'); if (!el) return; e.stopPropagation();
+    const n = el.dataset.pair; const t = [$(`.notestrip .si[data-pair="${n}"]`, sec), $(`.margin .e[data-pair="${n}"]`, sec)].find(x => x && x.offsetParent);
+    if (t){ t.scrollIntoView({block: 'nearest', behavior: 'smooth'}); hot(n, true); setTimeout(() => hot(n, false), 1400); } });
+}
 const esc = s => String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 // a note whose text came back from the chat and was pasted into the margin (it opens the arrived stop) is not the author's words (09/23 review L12)
 const pastedNote = nt => !!(cur && cur.D.exchange && cur.stops.some(z => z.kind === 'arrived' && z.state === nt.written_state));
@@ -423,7 +438,18 @@ function render(animate){
   const runs = isPre ? (s.shared_runs || []) : []; const inRun = wi => runs.some(([a, b]) => wi >= a && wi < b);
   const SI = (!isPre && !cur.sent && isFinal) ? sentenceMap(s) : null;      // word → sentence, for the tap (published draft only; Evan 09/14 14:39)
   let html = '', ins = 0, del = 0, hs = false, wi = -1;
-  const inl = s.inline_notes || []; const noteSpan = x => `<span class="inote" title="the author’s note">${esc(x.text)}</span> `;
+  const inl = s.inline_notes || [];
+  // each note drawn in the text shares a number with its card (09/23, Evan): numbered in text order, matched by the note's words;
+  // the cards keep their newest-first order (09/14 13:13), so the number is what ties the two
+  const pool = isPre ? (s.notes || []) : D.notes; const nrm = t => String(t || '').replace(/\s+/g, ' ').trim().toLowerCase();
+  const inlPn = new Map(), pairOf = {}; let pn = 0;
+  const elsewhere = [];   // a note drawn in this passage whose card stands on another paragraph (09/23): numbered too, with a quiet card that points there
+  [...inl].sort((a, b) => a.at - b.at).forEach(x => { const nt = pool.find(n => !(n.id in pairOf) && nrm(n.text) === nrm(x.text));
+    if (nt){ pairOf[nt.id] = ++pn; inlPn.set(x, pn); return; }
+    const h = ((LR.note_home || {})[nrm(x.text)] || []).find(z => z.k !== cur.k);
+    if (h){ inlPn.set(x, ++pn); elsewhere.push({n: pn, x, h}); } });
+  const noteSpan = x => { const n = inlPn.get(x);
+    return n ? `<span class="inote" data-pair="${n}" tabindex="0" title="the author’s note, ${n} in the margin">${pnMark(n)}${esc(x.text)}</span> ` : `<span class="inote" title="the author’s note">${esc(x.text)}</span> `; };
   inl.filter(x => x.at < 0).forEach(x => { html += noteSpan(x); });
   parts.forEach(p => {
     if (p.k !== 'del') wi++;
@@ -545,11 +571,20 @@ function render(animate){
     entries.push({rank: 3, html: h}); strip.push(`<div class="si" data-k="x${j}" role="button" tabindex="0" aria-expanded="false"><b>Cut</b><span class="short">${esc(register(c.name))}</span><div class="more" hidden><div class="t">${c.reason ? esc(register(c.reason)) : 'at save ' + c.died}</div></div></div>`); });
   // Order (Evan, 2026-09-14 13:13): the newest note on top; a note taken up stays a card and slides down as newer notes
   // arrive above it. Notes first by their written save, newest first; then the exchange card, chat lines, artifacts, cuts.
+  elsewhere.forEach(({n, x, h}) => { const para = `¶${h.k.slice(1)}`; const href = `${LR.base}?mode=drafts#${h.cite}`;
+    entries.push({rank: 1.2, html: `<div data-pair="${n}" class="e quiet elsewhere"><div class="l">${pnMark(n)}The author’s note <span>· its card is on ${para}</span></div><div class="t">${esc(x.text)}</div><div class="b">Written on a passage this paragraph shares with ${para}, where the note is placed.</div><div class="jump"><a href="${href}">Read it on ${para} ›</a></div></div>`});
+    strip.push(`<div data-pair="${n}" class="si elsewhere" data-k="h${n}" role="button" tabindex="0" aria-expanded="false"><b>${pnMark(n)}Note placed on ${para}</b><span class="short">${esc(x.text.length > 60 ? x.text.slice(0, 60) + '…' : x.text)}</span><div class="more" hidden><div class="t">${esc(x.text)}</div><div class="jump"><a href="${href}">Read it on ${para} ›</a></div></div></div>`); });
   entries.sort((a, b) => (a.rank - b.rank) || ((b.ws || 0) - (a.ws || 0)));
+  entries.forEach(e => { const id = (e.html.match(/data-id="([^"]+)"/) || [])[1]; const n = id != null ? pairOf[id] : null;
+    if (n) e.html = e.html.replace('<div class="e', `<div data-pair="${n}" class="e`).replace('<div class="l">', `<div class="l">${pnMark(n)}`); });
+  strip.forEach((h, i) => { const k = (h.match(/data-k="([^"]+)"/) || [])[1]; if (k == null) return;
+    const id = isPre ? k : (/^\d+$/.test(k) ? (D.notes[+k] || {}).id : null); const n = id != null ? pairOf[id] : null;
+    if (n) strip[i] = h.replace('<div class="si', `<div data-pair="${n}" class="si`).replace('<b>', `<b>${pnMark(n)}`); });
   const m = $('.margin', sec); const ns = $('.notestrip', sec);
   const before = flipBefore(m, '.e[data-id]'); const beforeS = flipBefore(ns, '.si[data-k]');
   m.innerHTML = entries.map(e => e.html).join('');
   ns.innerHTML = strip.join('');
+  pairBind(sec);
   if (animate && !reduced()){ flipAfter(m, '.e[data-id]', before); flipAfter(ns, '.si[data-k]', beforeS); }
   $$('.si', ns).forEach(si => {
     si.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); si.click(); } });

@@ -444,3 +444,9 @@ main.page ul.plain li{margin:0 0 4px;font-size:15px}
 main.page code.wrap{word-break:break-all;white-space:normal}
 ol.evening .lab{display:block;font-family:Franklin,sans-serif;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--graphite);margin:0 0 3px}
 main.page h2#who,main.page h2#weeks,main.page h2#dots,main.page h2#checked,main.page h2#gaps,main.page h2#archive{margin-top:38px}
+
+.pn{font-family:Franklin,sans-serif;font-size:.95em;font-weight:600;color:var(--graphite);margin-right:4px;font-variant-numeric:tabular-nums}
+.ptext .inote .pn{margin-right:3px}
+.ptext .inote[data-pair]{cursor:pointer}
+.ptext .inote.pair-hot{outline:2px solid var(--yellow);outline-offset:1px}
+.margin .e.pair-hot,.notestrip .si.pair-hot{box-shadow:inset 3px 0 0 var(--yellow)}
